@@ -1,0 +1,6 @@
+security.login.username: username
+security.login.password: password
+security.login.submit: login
+
+user_desactivated: Deactivated user
+user_not_found: Invalid username and password

@@ -1,0 +1,14 @@
+{% extends "@User/layout.html.twig" %}
+{% trans_default_domain 'user_bundle' %}
+
+{% block message %}
+    {% for msg in app.session.flashBag.get('error') %}
+    <div>
+        {{ msg | trans}}
+    </div>
+    {% endfor %}
+{% endblock message %}
+
+{% block user_content %}
+    {{ include('@User/security/login_content.html.twig') }}
+{% endblock user_content %}

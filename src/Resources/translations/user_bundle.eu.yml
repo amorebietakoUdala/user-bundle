@@ -1,0 +1,6 @@
+security.login.username: erabiltzailea
+security.login.password: pasahitza
+security.login.submit: sartu
+
+user_desactivated: Erabiltzailea desgaituta dago
+user_not_found: Erabiltzailea eta pasahitza ez dira zuzenak

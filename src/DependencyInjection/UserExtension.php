@@ -27,9 +27,26 @@ class UserExtension extends Extension
 
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
-
-//        $definition = $container->getDefinition('amreu.fakeService');
-//        $definition->setArgument(0, $configs['class']);
+        $definition = $container->getDefinition('amreu.user.manager');
+        if (null !== $config['class']) {
+            $definition->setArgument(1, $config['class']);
+        }
+        $definition = $container->getDefinition('amreu.login.form.authenticator');
+        if (null !== $config['domain']) {
+            $definition->setArgument(0, $config['domain']);
+        }
+        if (null !== $config['ldap_users_dn']) {
+            $definition->setArgument(1, $config['ldap_users_dn']);
+        }
+        if (null !== $config['ldap_users_filter']) {
+            $definition->setArgument(2, $config['ldap_users_filter']);
+        }
+        if (null !== $config['ldap_users_uuid']) {
+            $definition->setArgument(3, $config['ldap_users_uuid']);
+        }
+        if (null !== $config['successUrl']) {
+            $definition->setArgument(4, $config['successUrl']);
+        }
     }
 
 //    public function getAlias()

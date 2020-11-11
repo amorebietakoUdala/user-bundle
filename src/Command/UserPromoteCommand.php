@@ -1,55 +1,70 @@
 <?php
 
-namespace AMREU\Command;
+namespace AMREU\UserBundle\Command;
 
+use AMREU\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Question\Question;
 
+/**
+ * @autor ibilbao ibilbao@amorebieta.eus
+ *
+ * This command assigns the given roles to the specified username
+ * The roles must separated with spaces
+ */
 class UserPromoteCommand extends Command
 {
-    private $repo;
-    private $em;
+    private $manager;
 
-    protected static $defaultName = 'app:user:promote';
+    protected static $defaultName = 'amreu:user:promote';
 
-    public function __construct(\App\Repository\UserRepository $repo, EntityManagerInterface $em)
+    public function __construct(UserManagerInterface $manager)
     {
         parent::__construct();
-        $this->repo = $repo;
-        $this->em = $em;
+        $this->manager = $manager;
     }
 
     protected function configure()
     {
         $this
-            ->setDescription('Add a role to the user')
+            ->setDescription('Add roles to the user')
             ->addArgument('username', InputArgument::REQUIRED, 'Username to the promoted')
-            ->addArgument('role', InputArgument::REQUIRED, 'Role to be asigned to the user')
+            ->addArgument('roles', InputArgument::IS_ARRAY, 'Roles to be assigned to the user separated by spaces')
+            ->setHelp(<<<'EOT'
+            The <info>amreu:user:promote</info> command promotes a user assigning specifyed roles
+            You can specify more than one role separated by spaces
+              <info>php %command.full_name% <username> <roles></info>
+              
+                
+            EOT
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $helper = $this->getHelper('question');
         $io = new SymfonyStyle($input, $output);
         $username = $input->getArgument('username');
-        $role = $input->getArgument('role');
+        $rolesString = $input->getArgument('roles');
 
-        $user = $this->repo->findOneBy(['username' => $username]);
-        if ($user) {
-            $roles = $user->getRoles();
-            $roles[] = $role;
-            $user->setRoles(array_unique($roles));
-            $this->em->persist($user);
-            $this->em->flush();
-            $io->success(sprintf('User %s has been successfully promoted to %s', $username, $role));
-        } else {
-            $io->error(sprintf('User %s not found', $username));
+        if (empty($rolesString)) {
+            $question = new Question('Please enter roles list separated by spaces [ROLE_1 ROLE_2]: ', 'ROLE_1 ROLE_2');
+            $question->setTrimmable(true);
+            $rolesString = $helper->ask($input, $output, $question);
+        }
+        $roles = explode(' ', $rolesString);
+        try {
+            $this->manager->promoteUser($username, $roles);
+            $io->success(sprintf('User %s has been successfully promoted to %s', $username, implode(' ', $roles)));
+        } catch (\Exception $e) {
+            $io->error(sprintf('User %s could not be promoted: %s', $username, $e->getMessage()));
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

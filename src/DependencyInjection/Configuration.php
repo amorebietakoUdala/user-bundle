@@ -18,7 +18,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('class')->defaultValue('App\Entity\User')->info('User Class')->end();
+                ->scalarNode('object_manager')->defaultValue('doctrine.orm.default_entity_manager')->info('Doctrine class')->end()
+                ->scalarNode('class')->defaultValue('App\Entity\User')->info('User Class')->end()
+                ->scalarNode('domain')->info('Domain')->end()
+                ->scalarNode('ldap_users_dn')->info('LDAP\'s user dn')->end()
+                ->scalarNode('ldap_users_filter')->info('LDAP\'s user\'s filter')->end()
+                ->scalarNode('ldap_users_uuid')->defaultValue('sAMAccountName')->info('LDAP\'s user\'s uuid. For example: sAMAccountName')->end()
+                ->scalarNode('successUrl')->defaultValue('/')->info('LDAP\'s user\'s filter')->end()
+            ->end();
 
         return $treebuilder;
     }

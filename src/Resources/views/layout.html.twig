@@ -1,0 +1,16 @@
+{% trans_default_domain 'user_bundle' %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+    </head>
+    
+    <body>
+        {% block message %}{% endblock message %}
+        <div>
+            {% block user_content %}{% endblock user_content %}
+        </div>
+    </body>
+</html>

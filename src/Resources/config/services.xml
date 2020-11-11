@@ -3,9 +3,69 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
-
+<!--    <parameters>
+        <parameter key="domain">%env(LDAP_ACCOUNTDOMAINNAME)%</parameter>
+        <parameter key="ldap_users_dn">%env(LDAP_USERS_DN)%</parameter>
+        <parameter key="ldap_users_filter">(&amp;(objectclass=Person)(%env(LDAP_USERS_UUID)%={username}))</parameter>
+    </parameters>-->
     <services>
-        <service id="amreu.fakeService" class="AMREU\UserBundle\Service\FakeService" public="true" />
-        <service id="AMREU\UserBundle\Service\FakeService" alias="amreu.fakeService" public="false" />
+        <defaults autowire="true" autoconfigure="true"/>
+        <service id="AMREU\UserBundle\Doctrine\UserManager" alias="amreu.user.manager"/>
+        <service id="amreu.user.manager" class="AMREU\UserBundle\Doctrine\UserManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument id="class"/>
+        </service>
+        
+        <!-- SECURITY -->
+        <service id="amreu.login.form.authenticator" class="AMREU\UserBundle\Security\LoginFormAuthenticator">
+            <argument id="domain"/>
+            <argument id="ldap_users_dn"/>
+            <argument id="ldap_users_filter"/>
+            <argument id="ldap_users_uuid"/>
+            <argument id="successURL"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument type="service" id="router.default"/>
+            <argument type="service" id="security.csrf.token_manager"/>
+            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
+            <argument type="service" id="amreu.user.manager"/>
+        </service>
+
+        <!-- CONTROLLERS -->
+        <service id="amreu.security.controller" class="AMREU\UserBundle\Controller\SecurityController" public="true">
+            <argument type="service" id="amreu.user.manager"/>
+        </service>
+
+        <!-- COMMANDS -->
+        <service id="amreu.user.create" class="AMREU\UserBundle\Command\UserCreateCommand">
+            <argument type="service" id="amreu.user.manager" />
+            <tag name="console.command" command="amreu:user:create" />
+        </service>
+        
+        <service id="amreu.user.promote" class="AMREU\UserBundle\Command\UserPromoteCommand">
+            <argument type="service" id="amreu.user.manager" />
+            <tag name="console.command" command="amreu:user:promote" />
+        </service>
+
+        <service id="amreu.user.demote" class="AMREU\UserBundle\Command\UserDemoteCommand">
+            <argument type="service" id="amreu.user.manager" />
+            <tag name="console.command" command="amreu:user:demote" />
+        </service>
+
+        <service id="amreu.user.delete" class="AMREU\UserBundle\Command\UserDeleteCommand">
+            <argument type="service" id="amreu.user.manager" />
+            <tag name="console.command" command="amreu:user:delete" />
+        </service>
+
+        <service id="amreu.user.activate" class="AMREU\UserBundle\Command\UserActivateCommand">
+            <argument type="service" id="amreu.user.manager" />
+            <tag name="console.command" command="amreu:user:activate" />
+        </service>
+
+        <service id="amreu.user.deactivate" class="AMREU\UserBundle\Command\UserDeactivateCommand">
+            <argument type="service" id="amreu.user.manager" />
+            <tag name="console.command" command="amreu:user:deactivate" />
+        </service>
     </services>
 </container>

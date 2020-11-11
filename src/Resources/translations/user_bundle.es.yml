@@ -1,0 +1,6 @@
+security.login.username: usuario
+security.login.password: password
+security.login.submit: entrar
+
+user_desactivated: El usuario está desactivado
+user_not_found: El usuario y contraseña no son correctos

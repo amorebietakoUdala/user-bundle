@@ -2,34 +2,44 @@
 
 namespace AMREU\UserBundle\Model;
 
-use Symfony\Component\Security\Core\User\UserInterface;
+use AMREU\UserBundle\Model\UserInterface as AMREUUserInterface;
 
-class User implements UserInterface
+abstract class User implements AMREUUserInterface
 {
     /**
      * @var string
      */
-    private $username;
+    protected $username;
 
     /**
      * @var array
      */
-    private $roles = [];
+    protected $roles = [];
 
     /**
      * @var string The hashed password
      */
-    private $password;
+    protected $password;
 
     /**
      * @var string
      */
-    private $firstName;
+    protected $firstName;
 
     /**
      * @var string
      */
-    private $email;
+    protected $email;
+
+    /**
+     * @var bool
+     */
+    protected $activated;
+
+    /**
+     * @var \DateTime
+     */
+    protected $lastLogin;
 
     /**
      * A visual identifier that represents this user.
@@ -41,7 +51,7 @@ class User implements UserInterface
         return (string) $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername(string $username)
     {
         $this->username = $username;
 
@@ -60,7 +70,7 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles)
     {
         $this->roles = $roles;
 
@@ -75,7 +85,7 @@ class User implements UserInterface
         return (string) $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(string $password)
     {
         $this->password = $password;
 
@@ -87,7 +97,7 @@ class User implements UserInterface
      */
     public function getSalt()
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        return null;
     }
 
     /**
@@ -104,7 +114,7 @@ class User implements UserInterface
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(string $firstName)
     {
         $this->firstName = $firstName;
 
@@ -116,9 +126,33 @@ class User implements UserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string $email)
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getActivated(): bool
+    {
+        return $this->activated;
+    }
+
+    public function setActivated(bool $activated)
+    {
+        $this->activated = $activated;
+
+        return $this;
+    }
+
+    public function getLastLogin(): \DateTime
+    {
+        return $this->lastLogin;
+    }
+
+    public function setLastLogin(\DateTime $lastLogin)
+    {
+        $this->lastLogin = $lastLogin;
 
         return $this;
     }

@@ -1,0 +1,35 @@
+{
+    "name": "amorebietakoudala/user-bundle",
+    "description": "AmorebietakoUdala erabiltzaile bundlela",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Amorebietako Udala",
+            "email": "informatika@amorebieta.eus"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5",
+        "symfony/framework-bundle": "^5.1",
+        "symfony/security-bundle": "^5.1",
+        "symfony/ldap": "^5.1"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "AMREU\\UserBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AMREU\\UserBundle\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "symfony/browser-kit": "^5.1",
+        "symfony/css-selector": "^5.1",
+        "symfony/phpunit-bridge": "^5.1",
+        "doctrine/doctrine-bundle": "^2.1"
+    }
+}
