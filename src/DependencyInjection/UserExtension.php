@@ -44,8 +44,15 @@ class UserExtension extends Extension
         if (null !== $config['ldap_users_uuid']) {
             $definition->setArgument(3, $config['ldap_users_uuid']);
         }
-        if (null !== $config['successUrl']) {
-            $definition->setArgument(4, $config['successUrl']);
+        if (null !== $config['successPath']) {
+            $definition->setArgument(4, $config['successPath']);
+        }
+        $definition = $container->getDefinition('amreu.user.controller');
+        if (null !== $config['class']) {
+            $definition->setArgument(0, $config['class']);
+        }
+        if (null !== $config['form_type']) {
+            $definition->setArgument(1, $config['form_type']);
         }
     }
 

@@ -1,6 +1,18 @@
-security.login.username: username
-security.login.password: password
-security.login.submit: login
+# Fields
+user.username: username
+user.password: password
+user.firstName: first name
+user.email: email
+user.roles: roles
+user.new_password: password
+user.repeat_new_password: Repeeat password
 
-user_desactivated: Deactivated user
-user_not_found: Invalid username and password
+# Messages
+user_desactivated: The user is desactivated
+user_not_found: The user and password are not correct
+user_exists:  The user exists
+user_saved: User saved
+
+# Buttons
+btn.security.login.submit: Login
+btn.user.save: Save

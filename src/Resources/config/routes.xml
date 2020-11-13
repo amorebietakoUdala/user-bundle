@@ -5,14 +5,23 @@
         http://symfony.com/schema/routing/routing-1.0.xsd">
 <!--    <route id="user_controller_list" controller="amreu.user_controller::list" path="/user" />
     <route id="user_controller_new" controller="amreu.user_controller::new" path="/user/new" />-->
-    <route id="user_controller_test" controller="amreu.user_controller::test" path="/user/test" />
-
-    <route id="user_security_login_check" path="/login" methods="GET POST">
+    <!-- SECURITY -->
+    <route id="user_security_login_check" path="/login" methods="GET|POST">
         <default key="_controller">amreu.security.controller::login</default>
     </route>
 
-    <route id="user_security_logout" path="/logout" methods="GET POST">
+    <route id="user_security_logout" path="/logout" methods="GET|POST">
         <default key="_controller">amreu.security.controller::logout</default>
     </route>
 
+    <!-- USER -->
+    <route id="user_controller_new" path="/admin/user/new" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::new</default>
+    </route>
+
+    <route id="user_controller_test" path="/admin/user/test" methods="GET">
+        <default key="_controller">amreu.user.controller::test</default>
+    </route>
+    
+    
 </routes>

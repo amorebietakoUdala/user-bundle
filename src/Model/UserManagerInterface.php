@@ -16,17 +16,24 @@ namespace AMREU\UserBundle\Model;
 interface UserManagerInterface
 {
     /**
-     * Creates an empty user instance.
+     * Creates an empty user instance. Without storing it.
      *
-     * @param string $username
-     * @param string $password
-     * @param string $firstName
-     * @param string $email
-     * @param array  $roles
-     *
-     * @return AMREU\UserBundle\Model\User
+     * @return User
      */
-    public function createUser($username, $password, $firstName, $email, $roles);
+    public function newEmptyUser();
+
+    /**
+     * Creates and stores a new User with the given params.
+     *
+     * @return User
+     *
+     * @param type $username
+     * @param type $password
+     * @param type $firstName
+     * @param type $email
+     * @param type $roles
+     */
+    public function newUser($username, $password, $firstName, $email, $roles, $activated = true, $lastLogin = null);
 
     /**
      * Assigns the specified roles to a user.
@@ -34,7 +41,7 @@ interface UserManagerInterface
      * @param string $username
      * @param array  $roles
      *
-     * @return AMREU\UserBundle\Model\User
+     * @return User
      */
     public function promoteUser($username, $roles);
 
@@ -44,7 +51,7 @@ interface UserManagerInterface
      * @param string $username
      * @param array  $roles
      *
-     * @return AMREU\UserBundle\Model\User
+     * @return User
      */
     public function demoteUser($username, $roles);
 
@@ -53,7 +60,7 @@ interface UserManagerInterface
      *
      * @param string $username
      *
-     * @return AMREU\UserBundle\Model\User
+     * @return User
      */
     public function deleteUser($username);
 
@@ -63,26 +70,43 @@ interface UserManagerInterface
      *
      * @param string $username
      *
-     * @return AMREU\UserBundle\Model\User|null
+     * @return User|null
      */
     public function findUserByUsername($username);
 
     /**
+     * Find a user by email or returns
+     * Returns null if not found.
+     *
+     * @param string $username
+     *
+     * @return User|null
+     */
+    public function findUserByEmail($email);
+
+    /**
+     * Updates a user.
+     *
+     * @param UserInterface $user
+     */
+    public function updateUser(UserInterface $user);
+
+    /**
      * Updates password for the specified user.
      *
-     * @param AMREU\UserBundle\Model\User $user
+     * @param User $user
      * @param string password
      *
-     * @return AMREU\UserBundle\Model\User
+     * @return User
      */
     public function updatePassword($user, $password);
 
     /**
      * Updates last login date for the specified user.
      *
-     * @param AMREU\UserBundle\Model\User $user
+     * @param User $user
      *
-     * @return AMREU\UserBundle\Model\User
+     * @return User
      */
     public function updateLastLogin($user);
 }

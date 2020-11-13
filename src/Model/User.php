@@ -51,7 +51,7 @@ abstract class User implements AMREUUserInterface
         return (string) $this->username;
     }
 
-    public function setUsername(string $username)
+    public function setUsername(string $username): self
     {
         $this->username = $username;
 
@@ -59,6 +59,8 @@ abstract class User implements AMREUUserInterface
     }
 
     /**
+     * Returns the roles of the user.
+     *
      * @see UserInterface
      */
     public function getRoles(): array
@@ -70,7 +72,7 @@ abstract class User implements AMREUUserInterface
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
 
@@ -78,6 +80,8 @@ abstract class User implements AMREUUserInterface
     }
 
     /**
+     * Gets the user's encoded password.
+     *
      * @see UserInterface
      */
     public function getPassword(): ?string
@@ -85,7 +89,7 @@ abstract class User implements AMREUUserInterface
         return (string) $this->password;
     }
 
-    public function setPassword(string $password)
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
@@ -109,48 +113,68 @@ abstract class User implements AMREUUserInterface
         // $this->plainPassword = null;
     }
 
+    /**
+     * Returns the firstname of the user.
+     *
+     * @return string|null
+     */
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName)
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
 
         return $this;
     }
 
+    /**
+     * Return the email of the user.
+     *
+     * @return string|null
+     */
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email)
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
         return $this;
     }
 
+    /**
+     * Returns if the user is activated.
+     *
+     * @return bool
+     */
     public function getActivated(): bool
     {
         return $this->activated;
     }
 
-    public function setActivated(bool $activated)
+    public function setActivated(bool $activated): self
     {
         $this->activated = $activated;
 
         return $this;
     }
 
+    /**
+     * Returns the user's last successfull login date and time.
+     *
+     * @return \DateTime
+     */
     public function getLastLogin(): \DateTime
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(\DateTime $lastLogin)
+    public function setLastLogin(\DateTime $lastLogin = null): self
     {
         $this->lastLogin = $lastLogin;
 

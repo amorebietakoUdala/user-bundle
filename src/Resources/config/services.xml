@@ -17,14 +17,15 @@
             <argument id="class"/>
         </service>
         
+        <service id="amreu_user_provider" alias="amreu.user.manager"/>
+        
         <!-- SECURITY -->
         <service id="amreu.login.form.authenticator" class="AMREU\UserBundle\Security\LoginFormAuthenticator">
             <argument id="domain"/>
             <argument id="ldap_users_dn"/>
             <argument id="ldap_users_filter"/>
             <argument id="ldap_users_uuid"/>
-            <argument id="successURL"/>
-            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument id="successPath"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
             <argument type="service" id="security.user_password_encoder.generic"/>
@@ -35,6 +36,13 @@
         <!-- CONTROLLERS -->
         <service id="amreu.security.controller" class="AMREU\UserBundle\Controller\SecurityController" public="true">
             <argument type="service" id="amreu.user.manager"/>
+        </service>
+
+        <service id="amreu.user.controller" class="AMREU\UserBundle\Controller\UserController" public="true">
+            <argument id="class"/>
+            <argument id="form_type"/>
+            <argument type="service" id="amreu.user.manager"/>
+            <argument type="service" id="form.factory"/>
         </service>
 
         <!-- COMMANDS -->

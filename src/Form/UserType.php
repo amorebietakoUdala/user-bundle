@@ -25,6 +25,7 @@ class UserType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'translation_domain' => 'user_bundle',
             ])
             ->add('firstName', null, [
                 'label' => 'user.firstName',
@@ -32,6 +33,7 @@ class UserType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                 ],
+                'translation_domain' => 'user_bundle',
             ])
             ->add('email', EmailType::class, [
                 'label' => 'user.email',
@@ -39,17 +41,19 @@ class UserType extends AbstractType
                 'constraints' => [
                     new Email(),
                 ],
+                'translation_domain' => 'user_bundle',
             ])
             ->add('roles', ChoiceType::class, [
                 'label' => 'user.roles',
                 'choices' => [
                     'ROLE_USER' => 'ROLE_USER',
-                    'ROLE_API' => 'ROLE_API',
+                    'ROLE_AMOREBONO' => 'ROLE_AMOREBONO',
                     'ROLE_ADMIN' => 'ROLE_ADMIN',
                 ],
                 'multiple' => true,
                 'expanded' => false,
                 'required' => true,
+                'translation_domain' => 'user_bundle',
             ]);
         if ($password_change) {
             $builder->add('password', RepeatedType::class, [
@@ -70,6 +74,7 @@ class UserType extends AbstractType
                 ],
                 'first_options' => ['label' => 'user.new_password'],
                 'second_options' => ['label' => 'user.repeat_new_password'],
+                'translation_domain' => 'user_bundle',
             ]);
         }
     }

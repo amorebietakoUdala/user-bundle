@@ -46,5 +46,5 @@ interface UserInterface extends BaseUserInterface
 
     public function getLastLogin(): DateTime;
 
-    public function setLastLogin(DateTime $lastLogin);
+    public function setLastLogin(DateTime $lastLogin = null);
 }

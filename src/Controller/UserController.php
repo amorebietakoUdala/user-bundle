@@ -4,20 +4,28 @@ namespace AMREU\UserBundle\Controller;
 
 use AMREU\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserController extends AbstractController
 {
     private $userManager;
+    private $formFactory;
+    private $class;
+    private $formType;
 
-    public function __construct(UserManager $userManager)
+    public function __construct(string $class, string $formType, UserManager $userManager, FormFactoryInterface $formFactory)
     {
         $this->userManager = $userManager;
+        $this->formFactory = $formFactory;
+        $this->class = $class;
+        $this->formType = $formType;
     }
 
     public function test()
     {
-        $user = $this->userManager->createUser();
-        dd($user);
+        return $this->render('@User/user/test.html.twig');
     }
 
 //    public function list(Request $request)
@@ -32,41 +40,41 @@ class UserController extends AbstractController
 //        ]);
 //    }
 //
-//    /**
-//     * @Route("/user/new", name="admin_user_new")
-//     */
-//    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-//    {
-//        $form = $this->createForm(UserType::class, new User(), [
-//            'password_change' => true,
-//        ]);
-//
-//        $form->handleRequest($request);
-//        if ($form->isSubmitted() && $form->isValid()) {
-//            /* @var $user User */
-//            $user = $form->getData();
-//            $em = $this->getDoctrine()->getManager();
-//            $existing_email = $em->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-//            $existing_username = $em->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
-//            if (null !== $existing_email || null !== $existing_username) {
-//                $this->addFlash('error', 'messages.existingUser');
-//            } else {
-//                $em->persist($user);
-//                $user->setPassword($passwordEncoder->encodePassword($user, $user->getPassword()));
-//                $em->flush();
-//                $this->addFlash('success', 'messages.userSaved');
-//
-//                return $this->redirectToRoute('admin_user_list');
-//            }
-//        }
-//
-//        return $this->render('user/new.html.twig', [
-//            'form' => $form->createView(),
-//            'readonly' => false,
-//            'new' => true,
-//            'password_change' => true,
-//        ]);
-//    }
+
+    /**
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $user = $this->userManager->newEmptyUser();
+        $form = $this->formFactory->create($this->formType, $user, [
+            'password_change' => true,
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /* @var $user AMREU\UserBundle\Model\UserInterface */
+            $user = $form->getData();
+
+            $existing_email = $this->userManager->findUserByEmail($user->getEmail());
+            $existing_username = $this->userManager->findUserByUsername($user->getUsername());
+            if (null !== $existing_email || null !== $existing_username) {
+                $this->addFlash('error', 'user_exists');
+            } else {
+                $user->setPassword($passwordEncoder->encodePassword($user, $user->getPassword()));
+                $user->setActivated(true);
+                $this->userManager->updateUser($user);
+                $this->addFlash('success', 'user_saved');
+
+                return $this->redirectToRoute('user_controller_new');
+            }
+        }
+
+        return $this->render('@User/user/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
 //
 //    /**
 //     * @Route("/user/{user}", name="admin_user_show")

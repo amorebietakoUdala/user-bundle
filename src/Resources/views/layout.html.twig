@@ -8,9 +8,22 @@
     </head>
     
     <body>
-        {% block message %}{% endblock message %}
-        <div>
-            {% block user_content %}{% endblock user_content %}
-        </div>
+        <main>
+            {% block message %}
+                {% for msg in app.session.flashBag.get('error') %}
+                <div>
+                    {{ msg | trans}}
+                </div>
+                {% endfor %}
+                {% for msg in app.session.flashBag.get('success') %}
+                <div>
+                    {{ msg | trans}}
+                </div>
+                {% endfor %}
+            {% endblock message %}
+            <div>
+                {% block user_content %}{% endblock user_content %}
+            </div>
+        <main>
     </body>
 </html>

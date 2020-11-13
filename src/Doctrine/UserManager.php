@@ -8,9 +8,14 @@
 
 namespace AMREU\UserBundle\Doctrine;
 
+use AMREU\UserBundle\Model\UserInterface;
 use AMREU\UserBundle\Model\UserManagerInterface;
+use DateTime;
 use Doctrine\Persistence\ObjectManager;
+use Exception;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
+//use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserManager implements UserManagerInterface
 {
@@ -25,25 +30,18 @@ class UserManager implements UserManagerInterface
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    /**
-     * @param string $username
-     * @param string $password
-     * @param string $firstName
-     * @param string $email
-     * @param array  $roles
-     *
-     * @return AMREU\UserBundle\Model\UserInterface
-     *
-     * @throws \Exception
-     */
-    public function createUser($username, $password, $firstName, $email, $roles)
+    public function newEmptyUser()
     {
-        $foundUser = $this->findUserByUsername($username);
-        if (null !== $foundUser) {
-            throw new \Exception('Duplicate Username');
-        }
         $class = $this->class;
         $user = new $class();
+        $user->setRoles(['ROLE_USER']);
+
+        return $user;
+    }
+
+    public function newUser($username, $password, $firstName, $email, $roles, $activated = true, $lastLogin = null): UserInterface
+    {
+        $user = $this->newEmptyUser();
         /* @var $user AMREUUserInterface */
         $user->setUserName($username);
         $user->setRoles($roles);
@@ -51,7 +49,25 @@ class UserManager implements UserManagerInterface
         $user->setEmail($email);
         $encodedPassword = $this->passwordEncoder->encodePassword($user, $password);
         $user->setPassword($encodedPassword);
+        $user->setActivated($activated);
+        $user->setLastLogin($lastLogin);
+        $this->om->persist($user);
+        $this->om->flush();
 
+        return $user;
+    }
+
+    /**
+     * Updates the user.
+     *
+     * @param UserInterface2 $user the user to be updated
+     *
+     * @return UserInterface2
+     *
+     * @throws Exception
+     */
+    public function updateUser(UserInterface $user)
+    {
         $this->om->persist($user);
         $this->om->flush();
 
@@ -64,15 +80,15 @@ class UserManager implements UserManagerInterface
      * @param string $username
      * @param array  $roles
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface2
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function promoteUser($username, $roles)
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
-            throw new \Exception('Username not found. Can\'t promote.');
+            throw new Exception('Username not found. Can\'t promote.');
         }
         $actualRoles = $user->getRoles();
         $user->setRoles(array_unique(array_merge($actualRoles, $roles)));
@@ -88,15 +104,15 @@ class UserManager implements UserManagerInterface
      * @param type $username
      * @param type $roles
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface2
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function demoteUser($username, $roles)
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
-            throw new \Exception('Username not found. Can\'t demote.');
+            throw new Exception('Username not found. Can\'t demote.');
         }
         $actualRoles = $user->getRoles();
         $user->setRoles(array_unique(array_diff($actualRoles, $roles)));
@@ -111,13 +127,13 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteUser($username)
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
-            throw new \Exception('Username not found. Can\'t delete.');
+            throw new Exception('Username not found. Can\'t delete.');
         }
         $this->om->remove($user);
         $this->om->flush();
@@ -128,15 +144,15 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface2
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function setActivatedTo($username, $status)
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
-            throw new \Exception('Username not found. Can\'t delete.');
+            throw new Exception('Username not found. Can\'t delete.');
         }
         $user->setActivated($status);
         $this->om->persist($user);
@@ -150,9 +166,9 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface2
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function activateUser($username)
     {
@@ -164,9 +180,9 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface2
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function deactivateUser($username)
     {
@@ -179,11 +195,26 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return AMREU\UserBundle\Model\UserInterface|null
+     * @return UserInterface2|null
      */
     public function findUserByUsername($username)
     {
         $user = $this->om->getRepository($this->class)->findOneBy(['username' => $username]);
+
+        return $user;
+    }
+
+    /**
+     * Find a user by email or returns
+     * Returns null if not found.
+     *
+     * @param string $username
+     *
+     * @return UserInterface2|null
+     */
+    public function findUserByEmail($email)
+    {
+        $user = $this->om->getRepository($this->class)->findOneBy(['email' => $email]);
 
         return $user;
     }
@@ -203,10 +234,11 @@ class UserManager implements UserManagerInterface
 
     /**
      * Updates the user's password.
+     * User can not be null.
      *
      * @param AMREUUserInterface $user
      *
-     * @return AMREUUserInterface|null
+     * @return AMREUUserInterface
      */
     public function updatePassword($user, $password)
     {
@@ -218,16 +250,16 @@ class UserManager implements UserManagerInterface
     }
 
     /**
-     * Updates the user's last login date
-     * Returns null if not found.
+     * Updates the user's last login date.
+     * User can not be null.
      *
      * @param AMREUUserInterface $user
      *
-     * @return AMREUUserInterface|null
+     * @return AMREUUserInterface
      */
     public function updateLastLogin($user)
     {
-        $user->setLastLogin(new \DateTime());
+        $user->setLastLogin(new DateTime());
         $this->om->persist($user);
         $this->om->flush();
 

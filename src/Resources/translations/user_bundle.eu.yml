@@ -1,6 +1,18 @@
-security.login.username: erabiltzailea
-security.login.password: pasahitza
-security.login.submit: sartu
+# Fields
+user.username: erabiltzailea
+user.password: pasahitza
+user.firstName: ziena
+user.email: emaila
+user.roles: rolak
+user.new_password: pasahitza
+user.repeat_new_password: pasahitza errepikatu
 
+# Messages
 user_desactivated: Erabiltzailea desgaituta dago
 user_not_found: Erabiltzailea eta pasahitza ez dira zuzenak
+user_exists:  Erabiltzailea existitzen da dagoeneko
+user_saved: Erabiltzailea gorde egin da.
+
+# Buttons
+btn.security.login.submit: Sartu
+btn.user.save: "Gorde"

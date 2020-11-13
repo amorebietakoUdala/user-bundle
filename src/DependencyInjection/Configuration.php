@@ -20,11 +20,12 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('object_manager')->defaultValue('doctrine.orm.default_entity_manager')->info('Doctrine class')->end()
                 ->scalarNode('class')->defaultValue('App\Entity\User')->info('User Class')->end()
+                ->scalarNode('form_type')->defaultValue('AMREU\UserBundle\Form\UserType')->info('User registration form type')->end()
                 ->scalarNode('domain')->info('Domain')->end()
                 ->scalarNode('ldap_users_dn')->info('LDAP\'s user dn')->end()
                 ->scalarNode('ldap_users_filter')->info('LDAP\'s user\'s filter')->end()
                 ->scalarNode('ldap_users_uuid')->defaultValue('sAMAccountName')->info('LDAP\'s user\'s uuid. For example: sAMAccountName')->end()
-                ->scalarNode('successUrl')->defaultValue('/')->info('LDAP\'s user\'s filter')->end()
+                ->scalarNode('successPath')->defaultValue('/')->info('Path to go on successfull login')->end()
             ->end();
 
         return $treebuilder;

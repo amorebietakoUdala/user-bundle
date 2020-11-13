@@ -1,0 +1,8 @@
+{% trans_default_domain 'user_bundle' %}
+
+{{ form_start(form, {'method': 'post', 'action': path('user_controller_new'), 'attr': {'class': 'user_form_new'}}) }}
+    {{ form_widget(form) }}
+    <div>
+        <input type="submit" value="{{ 'btn.user.save'|trans }}" />
+    </div>
+{{ form_end(form) }}

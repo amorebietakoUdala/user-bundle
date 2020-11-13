@@ -81,7 +81,7 @@ class UserCreateCommand extends Command
         $password = $helper->ask($input, $output, $question);
 
         try {
-            $this->manager->createUser($username, $password, $firstName, $email, $roles);
+            $user = $this->manager->newUser($username, $password, $firstName, $email, $roles);
             $io->success('User '.$username.' succesfully created!');
         } catch (Exception $e) {
             $io->error($e->getMessage());
