@@ -23,11 +23,6 @@ class UserController extends AbstractController
         $this->formType = $formType;
     }
 
-    public function test()
-    {
-        return $this->render('@User/user/test.html.twig');
-    }
-
 //    public function list(Request $request)
 //    {
 //        $em = $this->getDoctrine()->getManager();

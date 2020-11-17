@@ -18,10 +18,4 @@
     <route id="user_controller_new" path="/admin/user/new" methods="GET|POST">
         <default key="_controller">amreu.user.controller::new</default>
     </route>
-
-    <route id="user_controller_test" path="/admin/user/test" methods="GET">
-        <default key="_controller">amreu.user.controller::test</default>
-    </route>
-    
-    
 </routes>
