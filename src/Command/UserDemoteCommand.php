@@ -40,9 +40,8 @@ class UserDemoteCommand extends Command
               <info>php %command.full_name% <username> <roles></info>
               
                 
-            EOT
-            );            
-        ;
+EOT
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -50,17 +49,16 @@ class UserDemoteCommand extends Command
         $helper = $this->getHelper('question');
         $io = new SymfonyStyle($input, $output);
         $username = $input->getArgument('username');
-        $rolesString = $input->getArgument('roles');
-
-        if (empty($rolesString)) {
+        $roles = $input->getArgument('roles');
+        if (empty($roles)) {
             $question = new Question('Please enter roles list separated by spaces [ROLE_1 ROLE_2]: ', 'ROLE_1 ROLE_2');
             $question->setTrimmable(true);
             $rolesString = $helper->ask($input, $output, $question);
+            $roles = explode(' ', $rolesString);
         }
-        $roles = explode(' ', $rolesString);
         try {
-            $this->manager->demoteUser($username);
-            $io->success(sprintf('User %s has been successfully demoted to %s', $username, implode(' ', $roles)));
+            $this->manager->demoteUser($username, $roles);
+            $io->success(sprintf('Roles %s has been successfully removed from user %s', implode(' ', $roles), $username));
         } catch (\Exception $e) {
             $io->error(sprintf('User %s could not be demoted: %s', $username, $e->getMessage()));
         }

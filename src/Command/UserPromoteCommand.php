@@ -40,7 +40,7 @@ class UserPromoteCommand extends Command
               <info>php %command.full_name% <username> <roles></info>
               
                 
-            EOT
+EOT
             )
         ;
     }
@@ -50,14 +50,13 @@ class UserPromoteCommand extends Command
         $helper = $this->getHelper('question');
         $io = new SymfonyStyle($input, $output);
         $username = $input->getArgument('username');
-        $rolesString = $input->getArgument('roles');
-
-        if (empty($rolesString)) {
+        $roles = $input->getArgument('roles');
+        if (empty($roles)) {
             $question = new Question('Please enter roles list separated by spaces [ROLE_1 ROLE_2]: ', 'ROLE_1 ROLE_2');
             $question->setTrimmable(true);
             $rolesString = $helper->ask($input, $output, $question);
+            $roles = explode(' ', $rolesString);
         }
-        $roles = explode(' ', $rolesString);
         try {
             $this->manager->promoteUser($username, $roles);
             $io->success(sprintf('User %s has been successfully promoted to %s', $username, implode(' ', $roles)));

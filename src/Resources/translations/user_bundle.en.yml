@@ -8,7 +8,7 @@ user.new_password: password
 user.repeat_new_password: Repeeat password
 
 # Messages
-user_desactivated: The user is desactivated
+user_deactivated: The user is deactivated
 user_not_found: The user and password are not correct
 user_exists:  The user exists
 user_saved: User saved

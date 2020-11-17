@@ -37,7 +37,7 @@ class UserDeleteCommand extends Command
               <info>php %command.full_name% <username></info>
               
                 
-            EOT
+EOT
             )
         ;
     }

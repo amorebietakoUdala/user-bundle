@@ -8,13 +8,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Question\Question;
 
 /**
  * @autor ibilbao ibilbao@amorebieta.eus
  *
  * This command desactivates the specified user by his username
- * 
  */
 class UserDeactivateCommand extends Command
 {
@@ -37,7 +35,7 @@ class UserDeactivateCommand extends Command
             The <info>amreu:user:activate</info> command deactivates a user
               <info>php %command.full_name% <username></info>
                 
-            EOT
+EOT
             )
         ;
     }

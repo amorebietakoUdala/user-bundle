@@ -8,7 +8,7 @@ user.new_password: pasahitza
 user.repeat_new_password: pasahitza errepikatu
 
 # Messages
-user_desactivated: Erabiltzailea desgaituta dago
+user_deactivated: Erabiltzailea desgaituta dago
 user_not_found: Erabiltzailea eta pasahitza ez dira zuzenak
 user_exists:  Erabiltzailea existitzen da dagoeneko
 user_saved: Erabiltzailea gorde egin da.

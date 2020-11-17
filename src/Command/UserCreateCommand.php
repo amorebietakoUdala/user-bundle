@@ -36,9 +36,9 @@ class UserCreateCommand extends Command
             The <info>amreu:user:create</info> command creates a new user by specifying username, first name, email and roles
             You can specify more than one role separated by spaces
               <info>php %command.full_name% <username> <firstName> <email> <roles></info>
-              
-                
-            EOT
+
+
+EOT
             )
        ;
     }
