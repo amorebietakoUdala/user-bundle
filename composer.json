@@ -31,6 +31,6 @@
     "require-dev": {
         "symfony/browser-kit": "^4.4|^5.1",
         "symfony/css-selector": "^4.4|^5.1",
-        "symfony/phpunit-bridge": "^4.4|^5.1",
+        "symfony/phpunit-bridge": "^4.4|^5.1"
     }
 }
