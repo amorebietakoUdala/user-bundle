@@ -180,4 +180,9 @@ abstract class User implements AMREUUserInterface
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->username;
+    }
 }
