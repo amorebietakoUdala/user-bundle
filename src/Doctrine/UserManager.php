@@ -30,18 +30,10 @@ class UserManager implements UserManagerInterface
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function newEmptyUser()
+    public function newUser($username, $password, $firstName, $email, $roles, $activated = true, $lastLogin = null): UserInterface
     {
         $class = $this->class;
         $user = new $class();
-        $user->setRoles(['ROLE_USER']);
-
-        return $user;
-    }
-
-    public function newUser($username, $password, $firstName, $email, $roles, $activated = true, $lastLogin = null): UserInterface
-    {
-        $user = $this->newEmptyUser();
         /* @var $user AMREUUserInterface */
         $user->setUserName($username);
         $user->setRoles($roles);
@@ -215,6 +207,30 @@ class UserManager implements UserManagerInterface
     public function findUserByEmail($email)
     {
         $user = $this->om->getRepository($this->class)->findOneBy(['email' => $email]);
+
+        return $user;
+    }
+
+    /**
+     * Find all users.
+     *
+     * @return array|null
+     */
+    public function findAll()
+    {
+        $user = $this->om->getRepository($this->class)->findAll();
+
+        return $user;
+    }
+
+    /**
+     * Find user by id.
+     *
+     * @return UserInterface|null
+     */
+    public function find($id)
+    {
+        $user = $this->om->getRepository($this->class)->find($id);
 
         return $user;
     }

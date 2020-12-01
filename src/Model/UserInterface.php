@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
  */
 interface UserInterface extends BaseUserInterface
 {
+    public function getId(): ?int;
+
     public function getUsername(): string;
 
     public function setUsername(string $username);

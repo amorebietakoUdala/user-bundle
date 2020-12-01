@@ -1,8 +1,15 @@
 {% trans_default_domain 'user_bundle' %}
 
-{{ form_start(form, {'method': 'post', 'action': path('user_controller_new'), 'attr': {'class': 'user_form_new'}}) }}
+{{ form_start(form, {'method': 'post', 'action': path('admin_user_new'), 'attr': {'class': 'user_form_new'}}) }}
     {{ form_widget(form) }}
-    <div>
-        <input type="submit" value="{{ 'btn.user.save'|trans }}" />
-    </div>
+
+<div class="row justify-content-center mt-2">
+{% if not readonly and not new %}
+    <a href="#" onClick="javascript:document.forms[0].action='{{ path('admin_user_edit', {'id': form.vars.value.id }) }}';document.forms[0].submit()">{{ "btn.user.save" | trans }}</a>
+{% endif %}
+{% if new %}
+	<a href="#" onClick="javascript:document.forms[0].submit()">{{ "btn.user.save" | trans }}</a>
+{% endif %}
+	&nbsp;<a href="{{ path('admin_user_list') }}">{{ "btn.user.cancel" | trans }}</a>
+</div>
 {{ form_end(form) }}

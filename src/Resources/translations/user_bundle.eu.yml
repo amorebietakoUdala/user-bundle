@@ -1,4 +1,5 @@
 # Fields
+user.id: id
 user.username: erabiltzailea
 user.password: pasahitza
 user.firstName: ziena
@@ -12,7 +13,21 @@ user_deactivated: Erabiltzailea desgaituta dago
 user_not_found: Erabiltzailea eta pasahitza ez dira zuzenak
 user_exists:  Erabiltzailea existitzen da dagoeneko
 user_saved: Erabiltzailea gorde egin da.
+user_deleted: Erabiltzailea behar bezala ezabatu da.
+
+# Labels
+table.options: 'Aukerak'
+link.show: 'Ikusi'
+link.edit: 'Editatu'
+link.delete: 'Ezabatu'
 
 # Buttons
 btn.security.login.submit: Sartu
 btn.user.save: "Gorde"
+btn.user.new: Berria
+btn.user.cancel: "Itzuli"
+
+# Roles
+ROLE_USER: Erabiltzailea
+ROLE_ADMIN: Administraria
+ROLE_SUPER_ADMIN: Super Administraria

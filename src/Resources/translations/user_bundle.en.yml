@@ -1,18 +1,33 @@
 # Fields
+user.id: id
 user.username: username
 user.password: password
 user.firstName: first name
 user.email: email
 user.roles: roles
 user.new_password: password
-user.repeat_new_password: Repeeat password
+user.repeat_new_password: repeat password
 
 # Messages
 user_deactivated: The user is deactivated
 user_not_found: The user and password are not correct
 user_exists:  The user exists
 user_saved: User saved
+user_deleted: User deleted
+
+# Labels
+table.options: 'Options'
+link.show: 'Show'
+link.edit: 'Edit'
+link.delete: 'Delete'
 
 # Buttons
 btn.security.login.submit: Login
 btn.user.save: Save
+btn.user.new: New
+btn.user.cancel: "Back"
+
+# Roles
+ROLE_USER: User
+ROLE_ADMIN: Administrator
+ROLE_SUPER_ADMIN: Super Administrator

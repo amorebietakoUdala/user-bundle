@@ -7,6 +7,11 @@ use AMREU\UserBundle\Model\UserInterface as AMREUUserInterface;
 abstract class User implements AMREUUserInterface
 {
     /**
+     * @var int
+     */
+    protected $id;
+
+    /**
      * @var string
      */
     protected $username;
@@ -40,6 +45,16 @@ abstract class User implements AMREUUserInterface
      * @var \DateTime
      */
     protected $lastLogin;
+
+    /**
+     * The id of the User.
+     *
+     * @see UserInterface
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     /**
      * A visual identifier that represents this user.

@@ -15,9 +15,27 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UserType extends AbstractType
 {
+    private $class;
+    private $allowedRoles;
+
+    /**
+     * @param string $class The User class name
+     */
+    public function __construct($class, $allowedRoles)
+    {
+        $this->class = $class;
+        if (empty($allowedRoles)) {
+            $allowedRoles = ['ROLE_USER', 'ROLE_ADMIN'];
+        }
+        foreach ($allowedRoles as $role) {
+            $this->allowedRoles[$role] = $role;
+        }
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $password_change = $options['password_change'];
+        $readonly = $options['readonly'];
         $builder
             ->add('username', null, [
                 'label' => 'user.username',
@@ -26,6 +44,7 @@ class UserType extends AbstractType
                     new NotBlank(),
                 ],
                 'translation_domain' => 'user_bundle',
+                'disabled' => $readonly,
             ])
             ->add('firstName', null, [
                 'label' => 'user.firstName',
@@ -34,6 +53,7 @@ class UserType extends AbstractType
                     new NotBlank(),
                 ],
                 'translation_domain' => 'user_bundle',
+                'disabled' => $readonly,
             ])
             ->add('email', EmailType::class, [
                 'label' => 'user.email',
@@ -42,18 +62,16 @@ class UserType extends AbstractType
                     new Email(),
                 ],
                 'translation_domain' => 'user_bundle',
+                'disabled' => $readonly,
             ])
             ->add('roles', ChoiceType::class, [
                 'label' => 'user.roles',
-                'choices' => [
-                    'ROLE_USER' => 'ROLE_USER',
-                    'ROLE_AMOREBONO' => 'ROLE_AMOREBONO',
-                    'ROLE_ADMIN' => 'ROLE_ADMIN',
-                ],
+                'choices' => $this->allowedRoles,
                 'multiple' => true,
                 'expanded' => false,
                 'required' => true,
                 'translation_domain' => 'user_bundle',
+                'disabled' => $readonly,
             ]);
         if ($password_change) {
             $builder->add('password', RepeatedType::class, [
@@ -82,8 +100,9 @@ class UserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+            'data_class' => $this->class,
             'password_change' => false,
+            'readonly' => false,
         ]);
     }
 }

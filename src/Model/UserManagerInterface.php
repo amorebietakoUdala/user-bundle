@@ -16,13 +16,6 @@ namespace AMREU\UserBundle\Model;
 interface UserManagerInterface
 {
     /**
-     * Creates an empty user instance. Without storing it.
-     *
-     * @return User
-     */
-    public function newEmptyUser();
-
-    /**
      * Creates and stores a new User with the given params.
      *
      * @return User
@@ -83,6 +76,20 @@ interface UserManagerInterface
      * @return User|null
      */
     public function findUserByEmail($email);
+
+    /**
+     * Find all users.
+     *
+     * @return array|null
+     */
+    public function findAll();
+
+    /**
+     * Find user by id.
+     *
+     * @return array|null
+     */
+    public function find(string $id);
 
     /**
      * Updates a user.

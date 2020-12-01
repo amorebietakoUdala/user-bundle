@@ -3,11 +3,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services
         https://symfony.com/schema/dic/services/services-1.0.xsd">
-<!--    <parameters>
-        <parameter key="domain">%env(LDAP_ACCOUNTDOMAINNAME)%</parameter>
-        <parameter key="ldap_users_dn">%env(LDAP_USERS_DN)%</parameter>
-        <parameter key="ldap_users_filter">(&amp;(objectclass=Person)(%env(LDAP_USERS_UUID)%={username}))</parameter>
-    </parameters>-->
     <services>
         <defaults autowire="true" autoconfigure="true"/>
         <service id="AMREU\UserBundle\Doctrine\UserManager" alias="amreu.user.manager"/>
@@ -33,16 +28,41 @@
             <argument type="service" id="amreu.user.manager"/>
         </service>
 
+        <service id="amreu.ldap.basic.authenticator" class="AMREU\UserBundle\Security\LdapBasicAuthenticator">
+            <argument id="domain"/>
+            <argument id="ldap_users_dn"/>
+            <argument id="ldap_users_filter"/>
+            <argument id="ldap_users_uuid"/>
+            <argument type="service" id="router.default"/>
+            <argument type="service" id="security.csrf.token_manager"/>
+            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
+            <argument type="service" id="amreu.user.manager"/>
+        </service>
+
         <!-- CONTROLLERS -->
         <service id="amreu.security.controller" class="AMREU\UserBundle\Controller\SecurityController" public="true">
+            <tag name="controller.service_arguments"/>
             <argument type="service" id="amreu.user.manager"/>
         </service>
 
         <service id="amreu.user.controller" class="AMREU\UserBundle\Controller\UserController" public="true">
-            <argument id="class"/>
+            <tag name="controller.service_arguments"/>
             <argument id="form_type"/>
             <argument type="service" id="amreu.user.manager"/>
+            <argument type="service" id="amreu.user.form.factory"/>
+        </service>
+
+        <!-- FORM SERVICES -->
+        <service id="amreu.user.form.factory" class="AMREU\UserBundle\Form\Factory\UserFormFactory">
+            <argument id="class"/>
+            <argument id="form_type"/>
             <argument type="service" id="form.factory"/>
+        </service>
+
+        <service id="amreu.user.form.type" class="AMREU\UserBundle\Form\UserType">
+            <argument id="class"/>
+            <argument id="allowedRoles"/>
         </service>
 
         <!-- COMMANDS -->

@@ -3,8 +3,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing
         http://symfony.com/schema/routing/routing-1.0.xsd">
-<!--    <route id="user_controller_list" controller="amreu.user_controller::list" path="/user" />
-    <route id="user_controller_new" controller="amreu.user_controller::new" path="/user/new" />-->
     <!-- SECURITY -->
     <route id="user_security_login_check" path="/login" methods="GET|POST">
         <default key="_controller">amreu.security.controller::login</default>
@@ -15,7 +13,20 @@
     </route>
 
     <!-- USER -->
-    <route id="user_controller_new" path="/admin/user/new" methods="GET|POST">
+    <route id="admin_user_new" path="{_locale}/admin/user/new" methods="GET|POST">
         <default key="_controller">amreu.user.controller::new</default>
     </route>
+    <route id="admin_user_list" path="{_locale}/admin/user" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::list</default>
+    </route>
+    <route id="admin_user_edit" path="{_locale}/admin/user/{id}/edit" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::edit</default>
+    </route>
+    <route id="admin_user_delete" path="{_locale}/admin/user/{id}/delete" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::delete</default>
+    </route>
+    <route id="admin_user_show" path="{_locale}/admin/user/{id}" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::show</default>
+    </route>
+    
 </routes>

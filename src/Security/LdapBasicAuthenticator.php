@@ -2,48 +2,41 @@
 
 namespace AMREU\UserBundle\Security;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Entity\User;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\LdapInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Csrf\CsrfToken;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
-use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use AMREU\UserBundle\Model\UserManagerInterface;
 
-class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
+class LdapBasicAuthenticator extends AbstractGuardAuthenticator
 {
-    use TargetPathTrait;
-
     private $domain;
     private $ldapUserDn;
     private $ldapUsersFilter;
     private $ldapUsersUuid;
-    private $successPath;
     private $urlGenerator;
     private $csrfTokenManager;
     private $passwordEncoder;
     private $ldap;
-    private $flashBag;
     private $userManager;
 
-    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
     {
         $this->domain = $domain;
         $this->ldapUserDn = $ldapUserDn;
         $this->ldapUsersFilter = $ldapUsersFilter;
         $this->ldapUsersUuid = $ldapUsersUuid;
-        $this->successPath = $successPath;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
@@ -53,22 +46,19 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function supports(Request $request)
     {
-        return 'user_security_login_check' === $request->attributes->get('_route')
-            && $request->isMethod('POST');
+        return null !== $request->headers->has('authorization') && 0 === strpos($request->headers->get('authorization'), 'Basic ');
     }
 
     public function getCredentials(Request $request)
     {
+        $authorizationHeader = $request->server->get('HTTP_AUTHORIZATION');
+        $rawCredentials = base64_decode(str_replace('Basic ', '', $authorizationHeader));
+        $username = $user = strstr($rawCredentials, ':', true);
+        $password = $user = substr(strstr($rawCredentials, ':'), 1);
         $credentials = [
-            'username' => $request->request->get('username'),
-            'password' => $request->request->get('password'),
-            'csrf_token' => $request->request->get('_csrf_token'),
+            'username' => $username,
+            'password' => $password,
         ];
-        $request->getSession()->set(
-            Security::LAST_USERNAME,
-            $credentials['username']
-        );
-        $this->flashBag = $request->getSession()->getFlashBag();
 
         return $credentials;
     }
@@ -84,23 +74,15 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             $bindSuccessfull = false;
         }
 
-        $token = new CsrfToken('authenticate', $credentials['csrf_token']);
-        if (!$this->csrfTokenManager->isTokenValid($token)) {
-            throw new InvalidCsrfTokenException();
-        }
-
         if ($bindSuccessfull) {
             $user = $this->updateUserFromLdap($credentials);
         } else {
             $user = $this->userManager->findUserByUsername($credentials['username']);
         }
-
         if (null === $user) {
-            $this->flashBag->add('error', 'user_not_found');
             throw new CustomUserMessageAuthenticationException('Username could not be found.');
         }
         if (!$user->getActivated()) {
-            $this->flashBag->add('error', 'user_deactivated');
             throw new CustomUserMessageAuthenticationException('The user has been deactivated.');
         }
         $user = $this->userManager->updateLastLogin($user);
@@ -121,19 +103,42 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $credentials['password'];
     }
 
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        $this->logger->debug('Authetication Failed!!!');
+
+        return new JsonResponse([
+            'message' => $exception->getMessage(),
+        ], 401);
+    }
+
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $targetPath = $this->getTargetPath($request->getSession(), $providerKey);
-        if (null === $targetPath) {
-            $targetPath = $this->urlGenerator->generate($this->successPath);
-        }
-
-        return new RedirectResponse($targetPath);
+        // Allow the request to continue
+        return null;
     }
 
     protected function getLoginUrl()
     {
-        return $this->urlGenerator->generate('user_security_login_check');
+        return $this->urlGenerator->generate('app_login');
+    }
+
+    /**
+     * Called when authentication is needed, but it's not sent.
+     */
+    public function start(Request $request, AuthenticationException $authException = null)
+    {
+        $data = array(
+            // you might translate this message
+            'message' => 'Authentication Required',
+        );
+
+        return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function supportsRememberMe()
+    {
+        return false;
     }
 
     private function addUser($newUser, $password)
@@ -147,30 +152,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
         return $user;
     }
-
-    /*
-     * Updates the password of the specified user in the database.
-     *
-     * @param AMREU\UserBundle\Model\UserInterface $user
-     * @param string $password
-     *
-     * @return AMREU\UserBundle\Model\UserInterface
-     */
-
-    private function updatePassword($user, $password)
-    {
-        return $this->userManager->updatePassword($user, $password);
-    }
-
-    /*
-     * Finds the user in the LDAP a returns a user objext
-     *
-     * Find the user in the ldap.
-     * Then check DB for the same username.
-     * If not found in DB add the user
-     *
-     * @return AMREU\UserBundle\Model\UserInterface
-     */
 
     private function updateUserFromLdap(array $credentials)
     {

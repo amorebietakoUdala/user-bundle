@@ -48,16 +48,22 @@ class UserExtension extends Extension
             $definition->setArgument(4, $config['successPath']);
         }
         $definition = $container->getDefinition('amreu.user.controller');
+        if (null !== $config['form_type']) {
+            $definition->setArgument(0, $config['form_type']);
+        }
+        $definition = $container->getDefinition('amreu.user.form.factory');
         if (null !== $config['class']) {
             $definition->setArgument(0, $config['class']);
         }
         if (null !== $config['form_type']) {
             $definition->setArgument(1, $config['form_type']);
         }
+        $definition = $container->getDefinition('amreu.user.form.type');
+        if (null !== $config['class']) {
+            $definition->setArgument(0, $config['class']);
+        }
+        if (null !== $config['allowedRoles']) {
+            $definition->setArgument(1, $config['allowedRoles']);
+        }
     }
-
-//    public function getAlias()
-//    {
-//        return 'user';
-//    }
 }
