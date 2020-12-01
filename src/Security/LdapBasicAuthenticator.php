@@ -80,7 +80,7 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
             $user = $this->userManager->findUserByUsername($credentials['username']);
         }
         if (null === $user) {
-            throw new CustomUserMessageAuthenticationException('Username could not be found.');
+            throw new CustomUserMessageAuthenticationException('Authentication failed.');
         }
         if (!$user->getActivated()) {
             throw new CustomUserMessageAuthenticationException('The user has been deactivated.');
@@ -105,8 +105,6 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        $this->logger->debug('Authetication Failed!!!');
-
         return new JsonResponse([
             'message' => $exception->getMessage(),
         ], 401);
@@ -120,7 +118,7 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
 
     protected function getLoginUrl()
     {
-        return $this->urlGenerator->generate('app_login');
+        return $this->urlGenerator->generate('user_security_login_check');
     }
 
     /**
