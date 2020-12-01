@@ -38,7 +38,7 @@ class UserFormFactory implements FactoryInterface
      */
     private function getClass()
     {
-        $end = explode('\\', $this->class);
+        $end = explode('\\', strtolower($this->class));
 
         return array_pop($end);
     }

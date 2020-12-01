@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<routes xmlns="http://symfony.com/schema/routing"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/routing
+        http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <!-- USER -->
+    <route id="admin_user_new" path="/admin/user/new" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::new</default>
+    </route>
+    <route id="admin_user_list" path="/admin/user" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::list</default>
+    </route>
+    <route id="admin_user_edit" path="/admin/user/{id}/edit" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::edit</default>
+    </route>
+    <route id="admin_user_delete" path="/admin/user/{id}/delete" methods="GET|POST|DELETE">
+        <default key="_controller">amreu.user.controller::delete</default>
+    </route>
+    <route id="admin_user_show" path="/admin/user/{id}" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::show</default>
+    </route>
+    
+</routes>
