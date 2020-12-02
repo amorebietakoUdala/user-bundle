@@ -3,8 +3,8 @@
 
 {% block title %}List Users{% endblock %}
 
-{% block body %}
+{% block user_content %}
     <main class="container-fluid" >
 		{{ include ('@User/user/_form.html.twig', {'readonly': readonly, 'new': new , 'password_change': password_change}) }}
     </main>
-{% endblock %}
+{% endblock user_content %}

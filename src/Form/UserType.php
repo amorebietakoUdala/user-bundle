@@ -2,8 +2,8 @@
 
 namespace AMREU\UserBundle\Form;
 
-use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -61,6 +61,11 @@ class UserType extends AbstractType
                 'constraints' => [
                     new Email(),
                 ],
+                'translation_domain' => 'user_bundle',
+                'disabled' => $readonly,
+            ])
+            ->add('activated', CheckboxType::class, [
+                'label' => 'user.activated',
                 'translation_domain' => 'user_bundle',
                 'disabled' => $readonly,
             ])
