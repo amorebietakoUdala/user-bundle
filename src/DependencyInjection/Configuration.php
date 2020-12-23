@@ -29,6 +29,8 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('ldap_users_filter')->info('LDAP\'s user\'s filter')->end()
                 ->scalarNode('ldap_users_uuid')->defaultValue('sAMAccountName')->info('LDAP\'s user\'s uuid. For example: sAMAccountName')->end()
                 ->scalarNode('successPath')->defaultValue('/')->info('Path to go on successfull login')->end()
+                ->scalarNode('ldap_user')->info('The user that will search in the LDAP')->end()
+                ->scalarNode('ldap_password')->info('The password of the user that will search in the LDAP')->end()
             ->end();
 
         return $treebuilder;
