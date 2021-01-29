@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class UserType extends AbstractType
 {
     private $class;
-    private $allowedRoles;
+    protected $allowedRoles;
 
     /**
      * @param string $class The User class name

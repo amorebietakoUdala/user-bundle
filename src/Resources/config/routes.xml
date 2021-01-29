@@ -11,7 +11,6 @@
     <route id="user_security_logout" path="/logout" methods="GET|POST">
         <default key="_controller">amreu.security.controller::logout</default>
     </route>
-
     <!-- USER -->
     <route id="admin_user_new" path="{_locale}/admin/user/new" methods="GET|POST">
         <default key="_controller">amreu.user.controller::new</default>

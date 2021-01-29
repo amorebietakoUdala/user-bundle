@@ -12,15 +12,15 @@ user.activated: activated
 # Messages
 user_deactivated: The user is deactivated
 user_not_found: The user and password are not correct
-user_exists:  The user exists
+user_exists: The user exists
 user_saved: User saved
 user_deleted: User deleted
 
 # Labels
-table.options: 'Options'
-link.show: 'Show'
-link.edit: 'Edit'
-link.delete: 'Delete'
+table.options: "Options"
+link.show: "Show"
+link.edit: "Edit"
+link.delete: "Delete"
 
 # Buttons
 btn.security.login.submit: Login

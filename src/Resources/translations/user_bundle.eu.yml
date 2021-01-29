@@ -12,15 +12,15 @@ user.activated: aktibatuta
 # Messages
 user_deactivated: Erabiltzailea desgaituta dago
 user_not_found: Erabiltzailea eta pasahitza ez dira zuzenak
-user_exists:  Erabiltzailea existitzen da dagoeneko
+user_exists: Erabiltzailea existitzen da dagoeneko
 user_saved: Erabiltzailea gorde egin da.
 user_deleted: Erabiltzailea behar bezala ezabatu da.
 
 # Labels
-table.options: 'Aukerak'
-link.show: 'Ikusi'
-link.edit: 'Editatu'
-link.delete: 'Ezabatu'
+table.options: "Aukerak"
+link.show: "Ikusi"
+link.edit: "Editatu"
+link.delete: "Ezabatu"
 
 # Buttons
 btn.security.login.submit: Sartu

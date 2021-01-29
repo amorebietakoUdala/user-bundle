@@ -94,7 +94,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         } else {
             $user = $this->userManager->findUserByUsername($credentials['username']);
         }
-
         if (null === $user) {
             $this->flashBag->add('error', 'user_not_found');
             throw new CustomUserMessageAuthenticationException('Username could not be found.');
@@ -104,7 +103,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             throw new CustomUserMessageAuthenticationException('The user has been deactivated.');
         }
         $user = $this->userManager->updateLastLogin($user);
-
         return $user;
     }
 

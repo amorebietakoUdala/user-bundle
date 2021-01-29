@@ -3,3 +3,4 @@
 composer.lock
 phpunit.xml
 /var/cache/test
+user-bundle.code-workspace
