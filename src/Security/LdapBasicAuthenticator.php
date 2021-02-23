@@ -166,4 +166,19 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
 
         return $user;
     }
+
+     /*
+     * Updates the password of the specified user in the database.
+     *
+     * @param AMREU\UserBundle\Model\UserInterface $user
+     * @param string $password
+     *
+     * @return AMREU\UserBundle\Model\UserInterface
+     */
+
+    private function updatePassword($user, $password)
+    {
+        return $this->userManager->updatePassword($user, $password);
+    }
+
 }
