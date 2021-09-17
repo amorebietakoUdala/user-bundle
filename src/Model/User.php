@@ -196,6 +196,17 @@ abstract class User implements AMREUUserInterface
         return $this;
     }
 
+    /**
+     * Returns the user's identifier.
+     *
+     * @return string
+     */
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username;
+    }
+
     public function __toString()
     {
         return $this->username;

@@ -13,7 +13,7 @@ use AMREU\UserBundle\Model\UserManagerInterface;
 use DateTime;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 //use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -23,7 +23,7 @@ class UserManager implements UserManagerInterface
     private $class;
     private $passwordEncoder;
 
-    public function __construct(ObjectManager $om = null, $class = null, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(ObjectManager $om = null, $class = null, UserPasswordHasherInterface $passwordEncoder)
     {
         $this->om = $om;
         $this->class = $class;
@@ -39,7 +39,7 @@ class UserManager implements UserManagerInterface
         $user->setRoles($roles);
         $user->setFirstName($firstName);
         $user->setEmail($email);
-        $encodedPassword = $this->passwordEncoder->encodePassword($user, $password);
+        $encodedPassword = $this->passwordEncoder->hashPassword($user, $password);
         $user->setPassword($encodedPassword);
         $user->setActivated($activated);
         $user->setLastLogin($lastLogin);
@@ -235,18 +235,18 @@ class UserManager implements UserManagerInterface
         return $user;
     }
 
-//    /**
-//     * Find a user by username or returns
-//     * Returns null if not found.
-//     *
-//     * @param string $username
-//     *
-//     * @return AMREUUserInterface|null
-//     */
-//    public function loadUserByUsername(string $username)
-//    {
-//        return $this->findUserByUsername($username);
-//    }
+    //    /**
+    //     * Find a user by username or returns
+    //     * Returns null if not found.
+    //     *
+    //     * @param string $username
+    //     *
+    //     * @return AMREUUserInterface|null
+    //     */
+    //    public function loadUserByUsername(string $username)
+    //    {
+    //        return $this->findUserByUsername($username);
+    //    }
 
     /**
      * Updates the user's password.
@@ -258,7 +258,7 @@ class UserManager implements UserManagerInterface
      */
     public function updatePassword($user, $password)
     {
-        $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
+        $user->setPassword($this->passwordEncoder->hashPassword($user, $password));
         $this->om->persist($user);
         $this->om->flush();
 

@@ -8,7 +8,7 @@
         <service id="AMREU\UserBundle\Doctrine\UserManager" alias="amreu.user.manager"/>
         <service id="amreu.user.manager" class="AMREU\UserBundle\Doctrine\UserManager">
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
-            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="security.user_password_hasher"/>
             <argument id="class"/>
         </service>
         
@@ -23,7 +23,7 @@
             <argument id="successPath"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
-            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="security.user_password_hasher"/>
             <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
             <argument type="service" id="amreu.user.manager"/>
         </service>
@@ -35,10 +35,23 @@
             <argument id="successPath"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
-            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="security.user_password_hasher"/>
             <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
             <argument type="service" id="amreu.user.manager"/>
         </service>
+
+        <service id="amreu.ldap.basic.passportauthenticator" class="AMREU\UserBundle\Security\Passport\LdapBasicPassportAuthenticator">
+            <argument id="domain"/>
+            <argument id="ldap_users_dn"/>
+            <argument id="ldap_users_filter"/>
+            <argument id="ldap_users_uuid"/>
+            <argument type="service" id="router.default"/>
+            <argument type="service" id="security.csrf.token_manager"/>
+            <argument type="service" id="security.user_password_hasher"/>
+            <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
+            <argument type="service" id="amreu.user.manager"/>
+        </service>
+
 
         <service id="amreu.ldap.basic.authenticator" class="AMREU\UserBundle\Security\LdapBasicAuthenticator">
             <argument id="domain"/>
@@ -47,7 +60,7 @@
             <argument id="ldap_users_uuid"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
-            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="security.user_password_hasher"/>
             <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
             <argument type="service" id="amreu.user.manager"/>
         </service>
@@ -61,7 +74,7 @@
             <argument id="ldap_password"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
-            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="security.user_password_hasher"/>
             <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
             <argument type="service" id="amreu.user.manager"/>
         </service>
