@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationExc
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\LdapInterface;
@@ -42,7 +42,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    private $flashBag;
    private $userManager;
 
-   public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+   public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
    {
       $this->domain = $domain;
       $this->ldapUserDn = $ldapUserDn;
@@ -69,7 +69,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
 
    public function supports(Request $request): bool
    {
-      return $this->urlGenerator->generate('user_security_login_check') === $request->getPathInfo()
+      return $this->urlGenerator->generate('user_security_login_check') === $request->getRequestUri()
          && $request->isMethod('POST');
    }
 

@@ -10,7 +10,7 @@ use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\LdapInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,13 +33,13 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
     private $ldap;
     private $userManager;
 
-    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $ldapUser, string $ldapPassword, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $ldapUser, string $ldapPassword, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
     {
         $this->domain = $domain;
         $this->ldapUserDn = $ldapUserDn;
         $this->ldapUsersFilter = $ldapUsersFilter;
         $this->ldapUsersUuid = $ldapUsersUuid;
-        $this->ldapUser= $ldapUser;
+        $this->ldapUser = $ldapUser;
         $this->ldapPassword = $ldapPassword;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
@@ -74,7 +74,7 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
             /* @var AMREU\UserBundle\Model\UserInterface $user */
             $user = $this->userManager->findUserByUsername($userLdapEntry[0]->getAttribute($this->ldapUsersUuid));
             if (null === $user) {
-                $user = $this->addUser($userLdapEntry,null);
+                $user = $this->addUser($userLdapEntry, null);
             }
         }
         if (!$user->getActivated()) {
@@ -142,21 +142,22 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
             $password,
             $newUser->getAttribute('givenName')[0],
             $newUser->getAttribute('mail')[0],
-            []);
+            []
+        );
 
         return $user;
     }
 
-    public function searchByEmail(string $email) 
+    public function searchByEmail(string $email)
     {
-        $filledFilter = "(&(objectclass=Person)(mail=".$email."))";
+        $filledFilter = "(&(objectclass=Person)(mail=" . $email . "))";
         try {
-                $this->ldap->bind($this->ldapUser, $this->ldapPassword);
-                $query = $this->ldap->query($this->ldapUserDn, $filledFilter);
-                $results = $query->execute()->toArray();
-                return $results;
-            } catch (ConnectionException $e) {
-                return null;
-        }        
+            $this->ldap->bind($this->ldapUser, $this->ldapPassword);
+            $query = $this->ldap->query($this->ldapUserDn, $filledFilter);
+            $results = $query->execute()->toArray();
+            return $results;
+        } catch (ConnectionException $e) {
+            return null;
+        }
     }
 }

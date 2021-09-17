@@ -1,8 +1,7 @@
 <?php
 
-namespace AMREU\UserBundle\Security;
+namespace AMREU\UserBundle\Security\Passport;
 
-use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,12 +13,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use AMREU\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class LdapBasicAuthenticator extends AbstractGuardAuthenticator
+class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     private $domain;
     private $ldapUserDn;
@@ -44,7 +47,7 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         $this->userManager = $userManager;
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): bool
     {
         return null !== $request->headers->has('authorization') && 0 === strpos($request->headers->get('authorization'), 'Basic ');
     }
@@ -63,7 +66,7 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return $credentials;
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    public function getUser(array $credentials): UserInterface
     {
         $username = $this->domain . '\\' . $credentials['username'];
         $user = null;
@@ -90,6 +93,20 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return $user;
     }
 
+    public function authenticate(Request $request): PassportInterface
+    {
+        $credentials = $this->getCredentials($request);
+        $user = $this->getUser($credentials);
+        $passport = null;
+        if ($user !== null) {
+            $valid = $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
+            $passport = new Passport(new UserBadge($credentials['username'], function ($userIdentifier) {
+                return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
+            }), new PasswordCredentials($credentials['password']));
+        }
+        return $passport;
+    }
+
     public function checkCredentials($credentials, UserInterface $user)
     {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
@@ -103,14 +120,14 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return $credentials['password'];
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return new JsonResponse([
             'message' => $exception->getMessage(),
         ], 401);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         // Allow the request to continue
         return null;

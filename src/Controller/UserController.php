@@ -5,7 +5,7 @@ namespace AMREU\UserBundle\Controller;
 use AMREU\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordHasherInterface;
 use AMREU\UserBundle\Form\Factory\UserFormFactory;
 
 class UserController extends AbstractController
@@ -31,7 +31,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function new(Request $request, UserPasswordHasherInterface $passwordEncoder)
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $form = $this->formFactory->createForm([
@@ -47,7 +47,7 @@ class UserController extends AbstractController
             if (null !== $existing_email || null !== $existing_username) {
                 $this->addFlash('error', 'user_exists');
             } else {
-                $user->setPassword($passwordEncoder->encodePassword($user, $user->getPassword()));
+                $user->setPassword($passwordEncoder->hashPassword($user, $user->getPassword()));
                 $user->setActivated(true);
                 $this->userManager->updateUser($user);
                 $this->addFlash('success', 'user_saved');
@@ -82,7 +82,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function edit(Request $request, UserPasswordHasherInterface $passwordEncoder)
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $form = $this->formFactory->createForm([
@@ -101,7 +101,7 @@ class UserController extends AbstractController
             if ('nopassword' === $user->getPassword()) {
                 $user->setPassword($previousPassword);
             } else {
-                $user->setPassword($passwordEncoder->encodePassword($user, $user->getPassword()));
+                $user->setPassword($passwordEncoder->hashPassword($user, $user->getPassword()));
             }
             $this->userManager->updateUser($user);
             $this->addFlash('success', 'user_saved');

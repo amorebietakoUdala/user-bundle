@@ -8,7 +8,7 @@ use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\LdapInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
@@ -37,7 +37,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
     private $flashBag;
     private $userManager;
 
-    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
     {
         $this->domain = $domain;
         $this->ldapUserDn = $ldapUserDn;
@@ -75,7 +75,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        $username = $this->domain.'\\'.$credentials['username'];
+        $username = $this->domain . '\\' . $credentials['username'];
         $user = null;
         try {
             $this->ldap->bind($username, $credentials['password']);
@@ -141,7 +141,8 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             $password,
             $newUser->getAttribute('givenName')[0],
             $newUser->getAttribute('mail')[0],
-            []);
+            []
+        );
 
         return $user;
     }
