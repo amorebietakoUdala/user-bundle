@@ -21,7 +21,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use AMREU\UserBundle\Model\UserManagerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
@@ -123,7 +122,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $passport = new Passport(new UserBadge($credentials['username'], function ($userIdentifier) {
          return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
       }), new PasswordCredentials($credentials['password']));
-
+      //      dd($user, $passport);
       return $passport;
    }
 
@@ -150,18 +149,20 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return new RedirectResponse($targetPath);
    }
 
-   public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
+   /**
+    * Override to change what happens after a bad username/password is submitted.
+    *
+    * @return RedirectResponse
+    */
+   public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
    {
+      if ($request->hasSession()) {
+         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+      }
 
-      $data = [
-         // you may want to customize or obfuscate the message first
-         'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+      $url = $this->getLoginUrl($request);
 
-         // or to translate this message
-         // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
-      ];
-
-      return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
+      return new RedirectResponse($url);
    }
 
    /*
