@@ -15,6 +15,18 @@
         <service id="amreu_user_provider" alias="amreu.user.manager"/>
         
         <!-- SECURITY -->
+        <service id="amreu.login.form.passportauthenticator" class="AMREU\UserBundle\Security\Passport\LoginFormPassportAuthenticator">
+            <argument id="domain"/>
+            <argument id="ldap_users_dn"/>
+            <argument id="ldap_users_filter"/>
+            <argument id="ldap_users_uuid"/>
+            <argument id="successPath"/>
+            <argument type="service" id="router.default"/>
+            <argument type="service" id="security.csrf.token_manager"/>
+            <argument type="service" id="security.user_password_encoder.generic"/>
+            <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
+            <argument type="service" id="amreu.user.manager"/>
+        </service>
         <service id="amreu.login.form.authenticator" class="AMREU\UserBundle\Security\LoginFormAuthenticator">
             <argument id="domain"/>
             <argument id="ldap_users_dn"/>

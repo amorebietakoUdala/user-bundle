@@ -22,7 +22,7 @@ class UserExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
         $configuration = $this->getConfiguration($configs, $container);
@@ -45,6 +45,22 @@ class UserExtension extends Extension
             $definition->setArgument(3, $config['ldap_users_uuid']);
         }
         $definition = $container->getDefinition('amreu.login.form.authenticator');
+        if (null !== $config['domain']) {
+            $definition->setArgument(0, $config['domain']);
+        }
+        if (null !== $config['ldap_users_dn']) {
+            $definition->setArgument(1, $config['ldap_users_dn']);
+        }
+        if (null !== $config['ldap_users_filter']) {
+            $definition->setArgument(2, $config['ldap_users_filter']);
+        }
+        if (null !== $config['ldap_users_uuid']) {
+            $definition->setArgument(3, $config['ldap_users_uuid']);
+        }
+        if (null !== $config['successPath']) {
+            $definition->setArgument(4, $config['successPath']);
+        }
+        $definition = $container->getDefinition('amreu.login.form.passportauthenticator');
         if (null !== $config['domain']) {
             $definition->setArgument(0, $config['domain']);
         }
@@ -97,6 +113,5 @@ class UserExtension extends Extension
         if (null !== $config['ldap_password']) {
             $definition->setArgument(5, $config['ldap_password']);
         }
-
     }
 }
