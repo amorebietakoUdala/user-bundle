@@ -23,6 +23,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use AMREU\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\PasswordUpgradeBadge;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
 class LoginFormPassportAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
@@ -40,6 +41,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    private $ldap;
    private $flashBag;
    private $userManager;
+   private $userRepository;
 
    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
    {
@@ -53,6 +55,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $this->passwordEncoder = $passwordEncoder;
       $this->ldap = $ldap;
       $this->userManager = $userManager;
+      $this->userRepository = $userManager->getRepository();
    }
 
    protected function getLoginUrl(Request $request): string
@@ -99,7 +102,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       } catch (ConnectionException $e) {
          $bindSuccessfull = false;
       }
-
       $token = new CsrfToken('authenticate', $credentials['csrf_token']);
       if (!$this->csrfTokenManager->isTokenValid($token)) {
          throw new InvalidCsrfTokenException();
@@ -122,7 +124,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $passport = new Passport(new UserBadge($credentials['username'], function ($userIdentifier) {
          return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
       }), new PasswordCredentials($credentials['password']));
-      //      dd($user, $passport);
+
+      $passport->addBadge(new PasswordUpgradeBadge($credentials['password'], $this->userRepository));
+
       return $passport;
    }
 
@@ -163,6 +167,11 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $url = $this->getLoginUrl($request);
 
       return new RedirectResponse($url);
+   }
+
+   public function getPassword($credentials): ?string
+   {
+      return ($credentials['password']);
    }
 
    /*
