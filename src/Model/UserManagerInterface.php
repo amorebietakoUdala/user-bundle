@@ -8,6 +8,8 @@
 
 namespace AMREU\UserBundle\Model;
 
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+
 /**
  * Description of UserManagerInterface.
  *
@@ -116,4 +118,11 @@ interface UserManagerInterface
      * @return User
      */
     public function updateLastLogin($user);
+
+    /**
+     * Returns the user's repository
+     *
+     * @return PasswordUpgraderInterface
+     */
+    public function getRepository();
 }

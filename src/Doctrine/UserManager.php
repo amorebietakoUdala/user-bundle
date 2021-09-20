@@ -15,8 +15,6 @@ use Doctrine\Persistence\ObjectManager;
 use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-//use Symfony\Component\Security\Core\User\UserInterface;
-
 class UserManager implements UserManagerInterface
 {
     protected $om;
@@ -235,19 +233,6 @@ class UserManager implements UserManagerInterface
         return $user;
     }
 
-    //    /**
-    //     * Find a user by username or returns
-    //     * Returns null if not found.
-    //     *
-    //     * @param string $username
-    //     *
-    //     * @return AMREUUserInterface|null
-    //     */
-    //    public function loadUserByUsername(string $username)
-    //    {
-    //        return $this->findUserByUsername($username);
-    //    }
-
     /**
      * Updates the user's password.
      * User can not be null.
@@ -280,5 +265,15 @@ class UserManager implements UserManagerInterface
         $this->om->flush();
 
         return $user;
+    }
+
+    /**
+     * Returns the user's repository
+     *
+     * @return PasswordUpgraderInterface
+     */
+    public function getRepository()
+    {
+        return $this->om->getRepository($this->class);
     }
 }
