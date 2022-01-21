@@ -58,6 +58,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $this->userRepository = $userManager->getRepository();
    }
 
+   /**
+    * @return string
+    */
    protected function getLoginUrl(Request $request): string
    {
       return $this->urlGenerator->generate('user_security_login_check');
@@ -67,15 +70,18 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     * Called on every request to decide if this authenticator should be
     * used for the request. Returning `false` will cause this authenticator
     * to be skipped.
+    * @return boool
     */
-
    public function supports(Request $request): bool
    {
       return $this->urlGenerator->generate('user_security_login_check') === $request->getRequestUri()
          && $request->isMethod('POST');
    }
 
-   private function getCredentials(Request $request)
+   /**
+    * @return mixed
+    */
+   private function getCredentials(Request $request): mixed
    {
       $credentials = [
          'username' => $request->request->get('username'),
@@ -143,6 +149,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return $user;
    }
 
+   /**
+    * @return Response
+    */
    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
    {
       $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
@@ -217,6 +226,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    /**
     * Override to control what happens when the user hits a secure page
     * but isn't logged in yet.
+    * @return Response
     */
    public function start(Request $request, AuthenticationException $authException = null): Response
    {
