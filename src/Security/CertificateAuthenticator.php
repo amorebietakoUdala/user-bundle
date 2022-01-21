@@ -2,6 +2,7 @@
 
 namespace AMREU\UserBundle\Security;
 
+use AMREU\UserBundle\Model\UserInterface as ModelUserInterface;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,12 +49,15 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         $this->userManager = $userManager;
     }
 
-    public function supports(Request $request)
+    /** 
+     * @return bool
+    */
+    public function supports(Request $request): bool
     {
         return $request->server->has('SSL_CLIENT_SAN_Email_0');
     }
 
-    public function getCredentials(Request $request)
+    public function getCredentials(Request $request): mixed
     {
         $credentials = [
             'email' => $request->server->get('SSL_CLIENT_SAN_Email_0'),
@@ -62,7 +66,10 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         return $credentials;
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    /**
+     * @return ModelUserInterface
+     */
+    public function getUser($credentials, UserProviderInterface $userProvider): ?ModelUserInterface
     {
         $email = $credentials['email'];
         $userLdapEntry = null;
@@ -85,7 +92,10 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         return $user;
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    /** 
+     * @return bool
+    */
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         /* Is the cerficate is valid no need to check password */
         return true;
@@ -99,14 +109,20 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         return 'certificate';
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    /**
+     * @return Response
+     */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return new JsonResponse([
             'message' => $exception->getMessage(),
         ], 401);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    /**
+     * @return Response
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         // Allow the request to continue
         return null;
@@ -130,7 +146,10 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
-    public function supportsRememberMe()
+    /** 
+     * @return bool
+    */
+    public function supportsRememberMe(): bool
     {
         return false;
     }

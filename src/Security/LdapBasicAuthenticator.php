@@ -2,6 +2,7 @@
 
 namespace AMREU\UserBundle\Security;
 
+use AMREU\UserBundle\Model\UserInterface as ModelUserInterface;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,12 +45,18 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         $this->userManager = $userManager;
     }
 
-    public function supports(Request $request)
+    /**
+    * @return bool
+    */
+    public function supports(Request $request): bool
     {
         return null !== $request->headers->has('authorization') && 0 === strpos($request->headers->get('authorization'), 'Basic ');
     }
 
-    public function getCredentials(Request $request)
+    /**
+     * @return mixed
+     */
+    public function getCredentials(Request $request): mixed
     {
         $authorizationHeader = $request->server->get('HTTP_AUTHORIZATION');
         $rawCredentials = base64_decode(str_replace('Basic ', '', $authorizationHeader));
@@ -63,7 +70,10 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return $credentials;
     }
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    /**
+     * @return ModelUserInterface
+     */
+    public function getUser($credentials, UserProviderInterface $userProvider): ModelUserInterface
     {
         $username = $this->domain . '\\' . $credentials['username'];
         $user = null;
@@ -90,7 +100,10 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return $user;
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    /** 
+     * @return bool
+    */
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
@@ -103,14 +116,20 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return $credentials['password'];
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    /**
+    * @return Response
+    */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return new JsonResponse([
             'message' => $exception->getMessage(),
         ], 401);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    /**
+     * @return Response
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         // Allow the request to continue
         return null;
@@ -123,8 +142,9 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
 
     /**
      * Called when authentication is needed, but it's not sent.
+     * @return Response
      */
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         $data = array(
             // you might translate this message
@@ -134,7 +154,10 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
-    public function supportsRememberMe()
+    /** 
+     * @return bool
+    */
+    public function supportsRememberMe(): bool
     {
         return false;
     }

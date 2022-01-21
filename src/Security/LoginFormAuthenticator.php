@@ -2,6 +2,7 @@
 
 namespace AMREU\UserBundle\Security;
 
+use AMREU\UserBundle\Model\UserInterface as ModelUserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Ldap\Exception\ConnectionException;
@@ -20,6 +21,7 @@ use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use AMREU\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
@@ -51,13 +53,19 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         $this->userManager = $userManager;
     }
 
-    public function supports(Request $request)
+    /**
+     * @return bool
+     */
+    public function supports(Request $request): bool
     {
         return 'user_security_login_check' === $request->attributes->get('_route')
             && $request->isMethod('POST');
     }
 
-    public function getCredentials(Request $request)
+    /**
+     * @return mixed
+     */
+    public function getCredentials(Request $request): mixed
     {
         $credentials = [
             'username' => $request->request->get('username'),
@@ -72,8 +80,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
         return $credentials;
     }
-
-    public function getUser($credentials, UserProviderInterface $userProvider)
+    /**
+     * @return ModelUserInterface
+     */
+    public function getUser($credentials, UserProviderInterface $userProvider): ?ModelUserInterface
     {
         $username = $this->domain . '\\' . $credentials['username'];
         $user = null;
@@ -106,7 +116,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $user;
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    /** 
+     * @return bool
+    */
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
@@ -119,7 +132,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return $credentials['password'];
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    /**
+     * @return Response
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         $targetPath = $this->getTargetPath($request->getSession(), $providerKey);
         if (null === $targetPath) {
@@ -129,7 +145,10 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         return new RedirectResponse($targetPath);
     }
 
-    protected function getLoginUrl()
+    /**
+     * @return string
+     */
+    protected function getLoginUrl(): string
     {
         return $this->urlGenerator->generate('user_security_login_check');
     }
