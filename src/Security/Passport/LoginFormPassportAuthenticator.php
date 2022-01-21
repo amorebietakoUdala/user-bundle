@@ -70,11 +70,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     * Called on every request to decide if this authenticator should be
     * used for the request. Returning `false` will cause this authenticator
     * to be skipped.
-<<<<<<< HEAD
-    * @return boool
-=======
     * @return bool
->>>>>>> beb2b2c963a4be88c69e9d3c76dcae9ac45509e4
     */
    public function supports(Request $request): bool
    {
@@ -190,7 +186,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return ($credentials['password']);
    }
 
-   /*
+   /** 
      * Updates the password of the specified user in the database.
      *
      * @param AMREU\UserBundle\Model\UserInterface $user
@@ -204,7 +200,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return $this->userManager->updatePassword($user, $password);
    }
 
-   /*
+   /**
      * Finds the user in the LDAP a returns a user objext
      *
      * Find the user in the ldap.

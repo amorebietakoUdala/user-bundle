@@ -207,7 +207,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         return $user;
     }
 
-    /*
+    /** 
      * Updates the password of the specified user in the database.
      *
      * @param AMREU\UserBundle\Model\UserInterface $user
