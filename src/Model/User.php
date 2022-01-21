@@ -114,7 +114,7 @@ abstract class User implements AMREUUserInterface
     /**
      * @see UserInterface
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }

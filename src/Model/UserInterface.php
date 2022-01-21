@@ -9,7 +9,7 @@
 namespace AMREU\UserBundle\Model;
 
 use DateTime;
-use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface as BaseUserInterface;
 
 /**
  * @author ibilbao
@@ -30,7 +30,7 @@ interface UserInterface extends BaseUserInterface
 
     public function setPassword(string $password);
 
-    public function getSalt();
+    public function getSalt(): ?string;
 
     public function eraseCredentials();
 
@@ -50,7 +50,7 @@ interface UserInterface extends BaseUserInterface
 
     public function setLastLogin(DateTime $lastLogin = null);
 
-    public function getUserIdentifier();
+    public function getUserIdentifier(): string;
 
     public function __toString();
 }
