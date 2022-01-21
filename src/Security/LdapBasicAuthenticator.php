@@ -135,7 +135,10 @@ class LdapBasicAuthenticator extends AbstractGuardAuthenticator
         return null;
     }
 
-    protected function getLoginUrl()
+    /**
+     * @return string
+     */
+    protected function getLoginUrl(): string
     {
         return $this->urlGenerator->generate('user_security_login_check');
     }

@@ -107,7 +107,10 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         return $passport;
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    /**
+     * @return bool
+     */
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
@@ -120,6 +123,9 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         return $credentials['password'];
     }
 
+    /**
+     * @return Response
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return new JsonResponse([
@@ -127,21 +133,28 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         ], 401);
     }
 
+    /**
+     * @return Response
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         // Allow the request to continue
         return null;
     }
 
-    protected function getLoginUrl()
+    /**
+     * @return string
+     */
+    protected function getLoginUrl(): string
     {
         return $this->urlGenerator->generate('user_security_login_check');
     }
 
     /**
      * Called when authentication is needed, but it's not sent.
+     * @return Response
      */
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         $data = array(
             // you might translate this message
@@ -151,7 +164,10 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
 
-    public function supportsRememberMe()
+    /**
+     * @return bool
+     */
+    public function supportsRememberMe(): bool
     {
         return false;
     }
