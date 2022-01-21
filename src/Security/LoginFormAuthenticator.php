@@ -80,6 +80,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
         return $credentials;
     }
+    
     /**
      * @return ModelUserInterface
      */

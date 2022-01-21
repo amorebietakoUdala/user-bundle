@@ -57,6 +57,9 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         return $request->server->has('SSL_CLIENT_SAN_Email_0');
     }
 
+    /**
+     * @return mixed
+     */
     public function getCredentials(Request $request): mixed
     {
         $credentials = [
@@ -128,15 +131,19 @@ class CertificateAuthenticator extends AbstractGuardAuthenticator
         return null;
     }
 
-    protected function getLoginUrl()
+    /**
+     * @return string
+     */
+    protected function getLoginUrl(): string
     {
         return $this->urlGenerator->generate('user_security_login_check');
     }
 
     /**
      * Called when authentication is needed, but it's not sent.
+     * @return Response
      */
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         $data = array(
             // you might translate this message
