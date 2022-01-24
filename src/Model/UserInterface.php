@@ -9,12 +9,13 @@
 namespace AMREU\UserBundle\Model;
 
 use DateTime;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface as BaseUserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface as PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface as CoreUserInterface;
 
 /**
  * @author ibilbao
  */
-interface UserInterface extends BaseUserInterface
+interface UserInterface extends CoreUserInterface, PasswordAuthenticatedUserInterface
 {
     public function getId(): ?int;
 

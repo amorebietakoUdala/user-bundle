@@ -78,10 +78,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          && $request->isMethod('POST');
    }
 
-   /**
-    * @return mixed
-    */
-   private function getCredentials(Request $request): mixed
+   private function getCredentials(Request $request)
    {
       $credentials = [
          'username' => $request->request->get('username'),
@@ -93,7 +90,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          $credentials['username']
       );
       $this->flashBag = $request->getSession()->getFlashBag();
-
       return $credentials;
    }
 
@@ -130,12 +126,12 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          throw new CustomUserMessageAuthenticationException('The user has been deactivated.');
       }
       $user = $this->userManager->updateLastLogin($user);
-      $passport = new Passport(new UserBadge($credentials['username'], function ($userIdentifier) {
-         return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
+      $passport = new Passport(
+         new UserBadge($credentials['username'], function ($userIdentifier) {
+            return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
       }), new PasswordCredentials($credentials['password']));
 
       $passport->addBadge(new PasswordUpgradeBadge($credentials['password'], $this->userRepository));
-
       return $passport;
    }
 
@@ -161,7 +157,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       if (null === $targetPath) {
          $targetPath = $this->urlGenerator->generate($this->successPath);
       }
-
       return new RedirectResponse($targetPath);
    }
 
@@ -172,6 +167,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     */
    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
    {
+      dd($exception);
       if ($request->hasSession()) {
          $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
       }
@@ -186,7 +182,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return ($credentials['password']);
    }
 
-   /** 
+   /* 
      * Updates the password of the specified user in the database.
      *
      * @param AMREU\UserBundle\Model\UserInterface $user
@@ -200,7 +196,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return $this->userManager->updatePassword($user, $password);
    }
 
-   /**
+   /*
      * Finds the user in the LDAP a returns a user objext
      *
      * Find the user in the ldap.

@@ -50,9 +50,9 @@ class UserManager implements UserManagerInterface
     /**
      * Updates the user.
      *
-     * @param UserInterface2 $user the user to be updated
+     * @param UserInterface $user the user to be updated
      *
-     * @return UserInterface2
+     * @return UserInterface
      *
      * @throws Exception
      */
@@ -70,11 +70,11 @@ class UserManager implements UserManagerInterface
      * @param string $username
      * @param array  $roles
      *
-     * @return UserInterface2
+     * @return UserInterface
      *
      * @throws Exception
      */
-    public function promoteUser($username, $roles)
+    public function promoteUser($username, $roles): UserInterface
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
@@ -94,11 +94,11 @@ class UserManager implements UserManagerInterface
      * @param type $username
      * @param type $roles
      *
-     * @return UserInterface2
+     * @return UserInterface
      *
      * @throws Exception
      */
-    public function demoteUser($username, $roles)
+    public function demoteUser($username, $roles): UserInterface
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
@@ -134,11 +134,11 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return UserInterface2
+     * @return UserInterface
      *
      * @throws Exception
      */
-    private function setActivatedTo($username, $status)
+    private function setActivatedTo($username, $status): UserInterface
     {
         $user = $this->findUserByUsername($username);
         if (null === $user) {
@@ -156,11 +156,11 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return UserInterface2
+     * @return UserInterface
      *
      * @throws Exception
      */
-    public function activateUser($username)
+    public function activateUser($username): UserInterface
     {
         return $this->setActivatedTo($username, true);
     }
@@ -170,11 +170,11 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return UserInterface2
+     * @return UserInterface
      *
      * @throws Exception
      */
-    public function deactivateUser($username)
+    public function deactivateUser($username): UserInterface
     {
         return $this->setActivatedTo($username, false);
     }
@@ -185,9 +185,9 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return UserInterface2|null
+     * @return UserInterface|null
      */
-    public function findUserByUsername($username)
+    public function findUserByUsername($username): ?UserInterface
     {
         $user = $this->om->getRepository($this->class)->findOneBy(['username' => $username]);
 
@@ -200,9 +200,9 @@ class UserManager implements UserManagerInterface
      *
      * @param string $username
      *
-     * @return UserInterface2|null
+     * @return UserInterface|null
      */
-    public function findUserByEmail($email)
+    public function findUserByEmail($email): ?UserInterface
     {
         $user = $this->om->getRepository($this->class)->findOneBy(['email' => $email]);
 
@@ -226,7 +226,7 @@ class UserManager implements UserManagerInterface
      *
      * @return UserInterface|null
      */
-    public function find($id)
+    public function find($id): ?UserInterface
     {
         $user = $this->om->getRepository($this->class)->find($id);
 
@@ -237,11 +237,11 @@ class UserManager implements UserManagerInterface
      * Updates the user's password.
      * User can not be null.
      *
-     * @param AMREUUserInterface $user
+     * @param UserInterface $user
      *
-     * @return AMREUUserInterface
+     * @return UserInterface
      */
-    public function updatePassword($user, $password)
+    public function updatePassword($user, $password): UserInterface
     {
         $user->setPassword($this->passwordEncoder->hashPassword($user, $password));
         $this->om->persist($user);
@@ -254,11 +254,11 @@ class UserManager implements UserManagerInterface
      * Updates the user's last login date.
      * User can not be null.
      *
-     * @param AMREUUserInterface $user
+     * @param UserInterface $user
      *
-     * @return AMREUUserInterface
+     * @return UserInterface
      */
-    public function updateLastLogin($user)
+    public function updateLastLogin($user): UserInterface
     {
         $user->setLastLogin(new DateTime());
         $this->om->persist($user);

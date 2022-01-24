@@ -9,6 +9,7 @@
 namespace AMREU\UserBundle\Model;
 
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use AMREU\UserBundle\Model\UserInterface;
 
 /**
  * Description of UserManagerInterface.
@@ -36,9 +37,11 @@ interface UserManagerInterface
      * @param string $username
      * @param array  $roles
      *
-     * @return User
+     * @throws Exception
+     * 
+     * @return UserInterface
      */
-    public function promoteUser($username, $roles);
+    public function promoteUser($username, $roles): UserInterface;
 
     /**
      * Removes the specified roles from a user.
@@ -46,16 +49,17 @@ interface UserManagerInterface
      * @param string $username
      * @param array  $roles
      *
-     * @return User
+     * @throws Exception
+     * 
+     * @return UserInterface
      */
-    public function demoteUser($username, $roles);
+    public function demoteUser($username, $roles): UserInterface;
 
     /**
      * Deletes the specified user.
      *
      * @param string $username
      *
-     * @return User
      */
     public function deleteUser($username);
 
@@ -65,9 +69,9 @@ interface UserManagerInterface
      *
      * @param string $username
      *
-     * @return User|null
+     * @return UserInterface|null
      */
-    public function findUserByUsername($username);
+    public function findUserByUsername($username): ?UserInterface;
 
     /**
      * Find a user by email or returns
@@ -75,9 +79,9 @@ interface UserManagerInterface
      *
      * @param string $username
      *
-     * @return User|null
+     * @return UserInterface|null
      */
-    public function findUserByEmail($email);
+    public function findUserByEmail($email): ?UserInterface;
 
     /**
      * Find all users.
@@ -103,19 +107,19 @@ interface UserManagerInterface
     /**
      * Updates password for the specified user.
      *
-     * @param User $user
+     * @param UserInterface $user
      * @param string password
      *
-     * @return User
+     * @return UserInterface
      */
     public function updatePassword($user, $password);
 
     /**
      * Updates last login date for the specified user.
      *
-     * @param User $user
+     * @param UserInterface $user
      *
-     * @return User
+     * @return UserInterface
      */
     public function updateLastLogin($user);
 
