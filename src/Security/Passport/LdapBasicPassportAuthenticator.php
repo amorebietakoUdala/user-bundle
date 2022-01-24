@@ -191,6 +191,15 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         return $user;
     }
 
+    /**
+     * Finds the user in the LDAP a returns a user objext
+     *
+     * Find the user in the ldap.
+     * Then check DB for the same username.
+     * If not found in DB add the user
+     *
+     * @return AMREU\UserBundle\Model\UserInterface
+     */
     private function updateUserFromLdap(array $credentials)
     {
         $filledFilter = str_replace('{username}', $credentials['username'], $this->ldapUsersFilter);

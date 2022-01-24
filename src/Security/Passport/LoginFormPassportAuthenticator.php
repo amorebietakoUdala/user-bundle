@@ -167,7 +167,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     */
    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
    {
-      dd($exception);
       if ($request->hasSession()) {
          $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
       }
@@ -182,7 +181,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return ($credentials['password']);
    }
 
-   /* 
+   /**  
      * Updates the password of the specified user in the database.
      *
      * @param AMREU\UserBundle\Model\UserInterface $user
@@ -196,7 +195,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       return $this->userManager->updatePassword($user, $password);
    }
 
-   /*
+   /**
      * Finds the user in the LDAP a returns a user objext
      *
      * Find the user in the ldap.
