@@ -1,9 +1,11 @@
 {% trans_default_domain 'user_bundle' %}
 
 <form action="{{ path("user_security_login_check") }}" method="post">
-    {% if csrf_token %}
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey | trans(error.messageData, 'user') }}</div>
     {% endif %}
+
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
 
     <label for="username">{{ 'user.username'|trans }}</label>
     <input type="text" id="username" name="username" value="{{ last_username }}" required="required" autocomplete="username" />

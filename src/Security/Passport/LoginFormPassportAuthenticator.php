@@ -9,21 +9,21 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\LdapInterface;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use AMREU\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\PasswordUpgradeBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
 class LoginFormPassportAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
@@ -39,7 +39,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    private $csrfTokenManager;
    private $passwordEncoder;
    private $ldap;
-   private $flashBag;
    private $userManager;
    private $userRepository;
 
@@ -89,7 +88,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          Security::LAST_USERNAME,
          $credentials['username']
       );
-      $this->flashBag = $request->getSession()->getFlashBag();
       return $credentials;
    }
 
@@ -107,10 +105,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       } catch (ConnectionException $e) {
          $bindSuccessfull = false;
       }
-      $token = new CsrfToken('authenticate', $credentials['csrf_token']);
-      if (!$this->csrfTokenManager->isTokenValid($token)) {
-         throw new InvalidCsrfTokenException();
-      }
 
       if ($bindSuccessfull) {
          $user = $this->updateUserFromLdap($credentials);
@@ -118,18 +112,19 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          $user = $this->userManager->findUserByUsername($credentials['username']);
       }
       if (null === $user) {
-         $this->flashBag->add('error', 'user_not_found');
-         throw new CustomUserMessageAuthenticationException('Username could not be found.');
+         throw new CustomUserMessageAuthenticationException('user_not_found');
       }
       if (!$user->getActivated()) {
-         $this->flashBag->add('error', 'user_deactivated');
-         throw new CustomUserMessageAuthenticationException('The user has been deactivated.');
+         throw new CustomUserMessageAuthenticationException('user_deactivated');
       }
       $user = $this->userManager->updateLastLogin($user);
       $passport = new Passport(
          new UserBadge($credentials['username'], function ($userIdentifier) {
             return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
-      }), new PasswordCredentials($credentials['password']));
+      }), new PasswordCredentials($credentials['password']),[
+         new CsrfTokenBadge('authenticate', $credentials['csrf_token']),
+         new RememberMeBadge(),
+      ]);
 
       $passport->addBadge(new PasswordUpgradeBadge($credentials['password'], $this->userRepository));
       return $passport;
@@ -171,9 +166,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
       }
 
-      $url = $this->getLoginUrl($request);
-
-      return new RedirectResponse($url);
+      return new RedirectResponse($this->getLoginUrl($request));
    }
 
    public function getPassword($credentials): ?string

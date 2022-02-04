@@ -2,33 +2,19 @@
 
 namespace AMREU\UserBundle\Controller;
 
-use AMREU\UserBundle\Doctrine\UserManager;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    private $userManager;
-
-    public function __construct(UserManager $userManager, CsrfTokenManagerInterface $tokenManager = null)
+    public function login(Request $request, AuthenticationUtils $authenticationUtils)
     {
-        $this->userManager = $userManager;
-        $this->tokenManager = $tokenManager;
-    }
-
-    public function login(Request $request)
-    {
-        $csrfToken = $this->tokenManager
-            ? $this->tokenManager->getToken('authenticate')->getValue()
-            : null;
-        $lastUsername = $request->getSession()->get(Security::LAST_USERNAME);
-
         return $this->render('@User/security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'csrf_token' => $csrfToken,
+            'last_username' => $request->getSession()->get(Security::LAST_USERNAME),
+            'error' => $authenticationUtils->getLastAuthenticationError()
         ]);
     }
 
