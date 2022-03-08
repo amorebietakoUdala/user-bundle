@@ -82,7 +82,6 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         } catch (ConnectionException $e) {
             $bindSuccessfull = false;
         }
-
         if ($bindSuccessfull) {
             $user = $this->updateUserFromLdap($credentials);
         } else {
