@@ -56,9 +56,9 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getCredentials(Request $request): mixed
+    public function getCredentials(Request $request): array
     {
         $authorizationHeader = $request->server->get('HTTP_AUTHORIZATION');
         $rawCredentials = base64_decode(str_replace('Basic ', '', $authorizationHeader));
