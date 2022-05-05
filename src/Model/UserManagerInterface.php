@@ -23,13 +23,13 @@ interface UserManagerInterface
      *
      * @return User
      *
-     * @param type $username
-     * @param type $password
-     * @param type $firstName
-     * @param type $email
-     * @param type $roles
+     * @param string $username
+     * @param string $password
+     * @param string $firstName
+     * @param string $email
+     * @param array $roles
      */
-    public function newUser($username, $password, $firstName, $email, $roles, $activated = true, $lastLogin = null);
+    public function newUser(string $username, string $password, string $firstName, string $email, array $roles, $activated = true, $lastLogin = null, $idNumber = null);
 
     /**
      * Assigns the specified roles to a user.

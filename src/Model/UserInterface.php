@@ -51,6 +51,10 @@ interface UserInterface extends CoreUserInterface, PasswordAuthenticatedUserInte
 
     public function setLastLogin(DateTime $lastLogin = null);
 
+    public function getIdNumber(): ?string;
+
+    public function setIdNumber(string $idNumber);
+
     public function getUserIdentifier(): string;
 
     public function __toString();

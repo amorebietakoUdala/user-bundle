@@ -8,6 +8,7 @@ user.roles: roles
 user.new_password: password
 user.repeat_new_password: repetir password
 user.activated: activado
+user.idNumber: dni
 
 # Messages
 user_deactivated: El usuario está desactivado

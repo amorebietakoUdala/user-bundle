@@ -28,11 +28,11 @@ class UserManager implements UserManagerInterface
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function newUser($username, $password, $firstName, $email, $roles, $activated = true, $lastLogin = null): UserInterface
+    public function newUser(string $username, string $password, string $firstName, string $email, array $roles, $activated = true, $lastLogin = null, $idNumber = null): UserInterface
     {
         $class = $this->class;
         $user = new $class();
-        /* @var $user AMREUUserInterface */
+        /** @var UserInterface $user */
         $user->setUserName($username);
         $user->setRoles($roles);
         $user->setFirstName($firstName);
@@ -41,6 +41,7 @@ class UserManager implements UserManagerInterface
         $user->setPassword($encodedPassword);
         $user->setActivated($activated);
         $user->setLastLogin($lastLogin);
+        $user->setIdNumber($idNumber);
         $this->om->persist($user);
         $this->om->flush();
 

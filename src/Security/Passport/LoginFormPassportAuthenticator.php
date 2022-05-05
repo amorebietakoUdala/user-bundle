@@ -137,7 +137,10 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          $password,
          $newUser->getAttribute('givenName')[0],
          $newUser->getAttribute('mail')[0],
-         []
+         [],
+         true,
+         new \DateTime(),
+         $newUser->getAttribute('uid') !== null ? $newUser->getAttribute('uid')[0]: null,
       );
 
       return $user;

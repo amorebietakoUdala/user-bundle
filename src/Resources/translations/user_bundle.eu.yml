@@ -8,6 +8,7 @@ user.roles: rolak
 user.new_password: pasahitza
 user.repeat_new_password: pasahitza errepikatu
 user.activated: aktibatuta
+user.idNumber: nan
 
 # Messages
 user_deactivated: Erabiltzailea desgaituta dago

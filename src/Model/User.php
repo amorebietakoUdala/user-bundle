@@ -47,6 +47,11 @@ abstract class User implements AMREUUserInterface
     protected $lastLogin;
 
     /**
+     * @var string
+     */
+    protected $idNumber;
+
+    /**
      * The id of the User.
      *
      * @see UserInterface
@@ -192,6 +197,23 @@ abstract class User implements AMREUUserInterface
     public function setLastLogin(\DateTime $lastLogin = null): self
     {
         $this->lastLogin = $lastLogin;
+
+        return $this;
+    }
+
+    /**
+     * Returns the idNumber of the user.
+     *
+     * @return string|null
+     */
+    public function getIdNumber(): ?string
+    {
+        return $this->idNumber;
+    }
+
+    public function setIdNumber(?string $idNumber): self
+    {
+        $this->idNumber = $idNumber;
 
         return $this;
     }

@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use AMREU\UserBundle\Form\Factory\UserFormFactory;
+use AMREU\UserBundle\Model\UserInterface;
 
 class UserController extends AbstractController
 {
@@ -37,10 +38,11 @@ class UserController extends AbstractController
         $form = $this->formFactory->createForm([
             'password_change' => true,
             'readonly' => false,
+            'new' => true,
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var $user AMREU\UserBundle\Model\UserInterface */
+            /** @var UserInterface $user */
             $user = $form->getData();
             $existing_email = $this->userManager->findUserByEmail($user->getEmail());
             $existing_username = $this->userManager->findUserByUsername($user->getUsername());
@@ -88,15 +90,16 @@ class UserController extends AbstractController
         $form = $this->formFactory->createForm([
             'readonly' => false,
             'password_change' => true,
+            'new' => false,
         ]);
-        /* @var $user AMREU\UserBundle\Model\UserInterface */
+        /** @var UserInterface $user */
         $user = $this->userManager->find($request->get('id'));
         $form->setData($user);
         $previousPassword = $user->getPassword();
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var $user AMREU\UserBundle\Model\UserInterface */
+            /** @var UserInterface $user */
             $user = $form->getData();
             if ('nopassword' === $user->getPassword()) {
                 $user->setPassword($previousPassword);

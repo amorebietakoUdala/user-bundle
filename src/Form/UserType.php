@@ -36,6 +36,7 @@ class UserType extends AbstractType
     {
         $password_change = $options['password_change'];
         $readonly = $options['readonly'];
+        $new = $options['new'];
         $builder
             ->add('username', null, [
                 'label' => 'user.username',
@@ -77,6 +78,12 @@ class UserType extends AbstractType
                 'required' => true,
                 'translation_domain' => 'user_bundle',
                 'disabled' => $readonly,
+            ])
+            ->add('idNumber', null, [
+                'label' => 'user.idNumber',
+                'empty_data' => '',
+                'translation_domain' => 'user_bundle',
+                'disabled' => $readonly,
             ]);
         if ($password_change) {
             $builder->add('password', RepeatedType::class, [
@@ -84,7 +91,7 @@ class UserType extends AbstractType
                     new NotBlank(),
                 ],
                 'data' => '',
-                'required' => true,
+                'required' => $new,
                 'type' => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
                 'options' => [
@@ -108,6 +115,7 @@ class UserType extends AbstractType
             'data_class' => $this->class,
             'password_change' => false,
             'readonly' => false,
+            'new' => false,
         ]);
     }
 }

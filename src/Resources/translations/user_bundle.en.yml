@@ -8,6 +8,8 @@ user.roles: roles
 user.new_password: password
 user.repeat_new_password: repeat password
 user.activated: activated
+user.idNumber: idNumber
+
 
 # Messages
 user_deactivated: The user is deactivated
