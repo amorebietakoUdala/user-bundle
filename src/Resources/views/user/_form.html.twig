@@ -10,6 +10,6 @@
 {% if new %}
 	<a href="#" onClick="javascript:document.forms[0].submit()">{{ "btn.user.save" | trans }}</a>
 {% endif %}
-	&nbsp;<a href="{{ path('admin_user_list') }}">{{ "btn.user.cancel" | trans }}</a>
+	&nbsp;<a href="{{ path('admin_user_index') }}">{{ "btn.user.cancel" | trans }}</a>
 </div>
 {{ form_end(form) }}

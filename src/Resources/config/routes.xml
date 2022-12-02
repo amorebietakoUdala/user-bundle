@@ -15,8 +15,11 @@
     <route id="admin_user_new" path="{_locale}/admin/user/new" methods="GET|POST">
         <default key="_controller">amreu.user.controller::new</default>
     </route>
-    <route id="admin_user_list" path="{_locale}/admin/user" methods="GET|POST">
-        <default key="_controller">amreu.user.controller::list</default>
+    <route id="admin_user_list" alias="admin_user_index">
+        <deprecated package="amorebietakoUdala/user-bundle" version="1.4"/>
+    </route>
+    <route id="admin_user_index" path="{_locale}/admin/user" methods="GET|POST">
+        <default key="_controller">amreu.user.controller::index</default>
     </route>
     <route id="admin_user_edit" path="{_locale}/admin/user/{id}/edit" methods="GET|POST">
         <default key="_controller">amreu.user.controller::edit</default>

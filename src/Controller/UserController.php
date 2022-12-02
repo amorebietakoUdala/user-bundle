@@ -7,34 +7,56 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use AMREU\UserBundle\Form\Factory\UserFormFactory;
+use Twig\Environment;
 use AMREU\UserBundle\Model\UserInterface;
 
-class UserController extends AbstractController
+class UserController extends BaseController
 {
     private $userManager;
     private $formFactory;
     private $formType;
+    private $twig;
 
-    public function __construct(string $formType, UserManager $userManager, UserFormFactory $formFactory)
+    public function __construct(string $formType, UserManager $userManager, UserFormFactory $formFactory, Environment $twig)
     {
         $this->userManager = $userManager;
         $this->formFactory = $formFactory;
         $this->formType = $formType;
+        $this->twig = $twig;
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $users = $this->userManager->findAll();
+        return $this->index($request);
+    }
 
-        return $this->render('@User/user/list.html.twig', [
-            'users' => $users,
-        ]);
+    public function index(Request $request) {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->loadQueryParameters($request);
+        $users = $this->userManager->findAll();
+        $ajax = $this->getAjax();
+        if (!$ajax) {
+            $loader = $this->twig->getLoader();
+            if ( $loader->exists('@User/user/index.html.twig') ) {
+                return $this->render('@User/user/index.html.twig', [
+                    'users' => $users,
+                ]);
+            }
+
+            return $this->render('@User/user/list.html.twig', [
+                'users' => $users,
+            ]);
+        } else {
+            return $this->render('@User/user/_list.html.twig', [
+                'users' => $users,
+            ]);            
+        }
     }
 
     public function new(Request $request, UserPasswordHasherInterface $passwordEncoder)
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->loadQueryParameters($request);
         $form = $this->formFactory->createForm([
             'password_change' => true,
             'readonly' => false,
@@ -69,6 +91,7 @@ class UserController extends AbstractController
     public function show(Request $request)
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->loadQueryParameters($request);
         $form = $this->formFactory->createForm([
             'readonly' => true,
             'password_change' => false,
@@ -87,6 +110,7 @@ class UserController extends AbstractController
     public function edit(Request $request, UserPasswordHasherInterface $passwordEncoder)
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        $this->loadQueryParameters($request);
         $form = $this->formFactory->createForm([
             'readonly' => false,
             'password_change' => true,
@@ -120,10 +144,11 @@ class UserController extends AbstractController
 
     public function delete(Request $request)
     {
+        $this->loadQueryParameters($request);
         $user = $this->userManager->find($request->get('id'));
         $this->userManager->deleteUser($user->getUsername());
         $this->addFlash('success', 'user_deleted');
 
-        return $this->redirectToRoute('admin_user_list');
+        return $this->redirectToRoute('admin_user_index');
     }
 }

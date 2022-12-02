@@ -10,16 +10,7 @@
     <body>
         <main>
             {% block message %}
-                {% for msg in app.session.flashBag.get('error') %}
-                <div>
-                    {{ msg | trans}}
-                </div>
-                {% endfor %}
-                {% for msg in app.session.flashBag.get('success') %}
-                <div>
-                    {{ msg | trans}}
-                </div>
-                {% endfor %}
+                {{ include('@User/user/_messages.html.twig') }}
             {% endblock message %}
             <div>
                 {% block user_content %}{% endblock user_content %}

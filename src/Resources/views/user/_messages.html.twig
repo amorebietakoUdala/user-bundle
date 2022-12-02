@@ -1,0 +1,12 @@
+{% trans_default_domain 'user_bundle' %}
+
+{% for msg in app.session.flashBag.get('error') %}
+<div>
+	{{ msg | trans}}
+</div>
+{% endfor %}
+{% for msg in app.session.flashBag.get('success') %}
+<div>
+	{{ msg | trans}}
+</div>
+{% endfor %}
