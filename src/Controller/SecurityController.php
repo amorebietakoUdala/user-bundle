@@ -3,6 +3,7 @@
 namespace AMREU\UserBundle\Controller;
 
 use LogicException;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;

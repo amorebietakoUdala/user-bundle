@@ -2,8 +2,8 @@
 
 namespace AMREU\UserBundle\Controller;
 
+use AMREU\UserBundle\Controller\BaseController;
 use AMREU\UserBundle\Doctrine\UserManager;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use AMREU\UserBundle\Form\Factory\UserFormFactory;

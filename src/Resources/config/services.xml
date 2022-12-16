@@ -81,6 +81,10 @@
 
 
         <!-- CONTROLLERS -->
+        <service id="amreu.user.basecontroller" class="AMREU\UserBundle\Controller\BaseController">
+            <tag name="controller.service_arguments"/>
+        </service>
+
         <service id="amreu.security.controller" class="AMREU\UserBundle\Controller\SecurityController" public="true">
             <tag name="controller.service_arguments"/>
             <argument type="service" id="amreu.user.manager"/>
