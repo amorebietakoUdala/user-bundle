@@ -31,35 +31,6 @@ class UserExtension extends Extension
         if (null !== $config['class']) {
             $definition->setArgument(1, $config['class']);
         }
-        $definition = $container->getDefinition('amreu.ldap.basic.authenticator');
-        if (null !== $config['domain']) {
-            $definition->setArgument(0, $config['domain']);
-        }
-        if (null !== $config['ldap_users_dn']) {
-            $definition->setArgument(1, $config['ldap_users_dn']);
-        }
-        if (null !== $config['ldap_users_filter']) {
-            $definition->setArgument(2, $config['ldap_users_filter']);
-        }
-        if (null !== $config['ldap_users_uuid']) {
-            $definition->setArgument(3, $config['ldap_users_uuid']);
-        }
-        $definition = $container->getDefinition('amreu.login.form.authenticator');
-        if (null !== $config['domain']) {
-            $definition->setArgument(0, $config['domain']);
-        }
-        if (null !== $config['ldap_users_dn']) {
-            $definition->setArgument(1, $config['ldap_users_dn']);
-        }
-        if (null !== $config['ldap_users_filter']) {
-            $definition->setArgument(2, $config['ldap_users_filter']);
-        }
-        if (null !== $config['ldap_users_uuid']) {
-            $definition->setArgument(3, $config['ldap_users_uuid']);
-        }
-        if (null !== $config['successPath']) {
-            $definition->setArgument(4, $config['successPath']);
-        }
         $definition = $container->getDefinition('amreu.login.form.passportauthenticator');
         if (null !== $config['domain']) {
             $definition->setArgument(0, $config['domain']);
