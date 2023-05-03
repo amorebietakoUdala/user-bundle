@@ -41,8 +41,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    private $ldap;
    private $userManager;
    private $userRepository;
+   private $internetDomain;
 
-   public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+   public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, string $internetDomain, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
    {
       $this->domain = $domain;
       $this->ldapUserDn = $ldapUserDn;
@@ -55,6 +56,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $this->ldap = $ldap;
       $this->userManager = $userManager;
       $this->userRepository = $userManager->getRepository();
+      $this->internetDomain = $internetDomain;
    }
 
    /**
@@ -97,19 +99,22 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    public function authenticate(Request $request): PassportInterface
    {
       $credentials = $this->getCredentials($request);
-      $username = $this->domain . '\\' . $credentials['username'];
+      $username = $credentials['username'];
+      // Remove Internet Domain y email is provided instead off username alone
+      if ( strpos($username,$this->internetDomain) > 0 ) {
+         $username = substr($username, 0, strpos($username,$this->internetDomain) ); 
+      }
       $user = null;
       try {
-         $this->ldap->bind($username, $credentials['password']);
+         $this->ldap->bind($this->domain . '\\' .$username, $credentials['password']);
          $bindSuccessfull = true;
       } catch (ConnectionException $e) {
          $bindSuccessfull = false;
       }
-
       if ($bindSuccessfull) {
          $user = $this->updateUserFromLdap($credentials);
       } else {
-         $user = $this->userManager->findUserByUsername($credentials['username']);
+         $user = $this->userManager->findUserByUsername($username);
       }
       if (null === $user) {
          throw new CustomUserMessageAuthenticationException('user_not_found');
@@ -119,7 +124,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       }
       $user = $this->userManager->updateLastLogin($user);
       $passport = new Passport(
-         new UserBadge($credentials['username'], function ($userIdentifier) {
+         new UserBadge($username, function ($userIdentifier) {
             return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
       }), new PasswordCredentials($credentials['password']),[
          new CsrfTokenBadge('authenticate', $credentials['csrf_token']),
@@ -203,10 +208,15 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
 
    private function updateUserFromLdap(array $credentials)
    {
-      $filledFilter = str_replace('{username}', $credentials['username'], $this->ldapUsersFilter);
+      if ( strpos($credentials['username'],$this->internetDomain) > 0 ) {
+         $username = substr($credentials['username'], 0, strpos($credentials['username'],$this->internetDomain) ); 
+      } else {
+         $username = $credentials['username'];
+      }
+      $filledFilter = str_replace('{username}', $username, $this->ldapUsersFilter);
       $query = $this->ldap->query($this->ldapUserDn, $filledFilter);
       $results = $query->execute()->toArray();
-      $dbUser = $this->userManager->findUserByUsername($credentials['username']);
+      $dbUser = $this->userManager->findUserByUsername($username);
       if (null === $dbUser) {
          /* @var AMREU\UserBundle\Model\UserInterface $user */
          $user = $this->addUser($results[0], $credentials['password']);

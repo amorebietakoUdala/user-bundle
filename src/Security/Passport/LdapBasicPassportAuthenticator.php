@@ -33,8 +33,9 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     private $passwordEncoder;
     private $ldap;
     private $userManager;
+    private $internetDomain;
 
-    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $internetDomain, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
     {
         $this->domain = $domain;
         $this->ldapUserDn = $ldapUserDn;
@@ -45,6 +46,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         $this->passwordEncoder = $passwordEncoder;
         $this->ldap = $ldap;
         $this->userManager = $userManager;
+        $this->internetDomain = $internetDomain;
     }
 
     /**
@@ -74,10 +76,14 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
 
     public function getUser(array $credentials): UserInterface
     {
-        $username = $this->domain . '\\' . $credentials['username'];
+        $username = $credentials['username'];
+        // Remove Internet Domain y email is provided instead off username alone
+        if ( strpos($username,$this->internetDomain) > 0 ) {
+           $username = substr($username, 0, strpos($username,$this->internetDomain) ); 
+        }
         $user = null;
         try {
-            $this->ldap->bind($username, $credentials['password']);
+            $this->ldap->bind($this->domain . '\\' . $username, $credentials['password']);
             $bindSuccessfull = true;
         } catch (ConnectionException $e) {
             $bindSuccessfull = false;
@@ -85,7 +91,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         if ($bindSuccessfull) {
             $user = $this->updateUserFromLdap($credentials);
         } else {
-            $user = $this->userManager->findUserByUsername($credentials['username']);
+            $user = $this->userManager->findUserByUsername($username);
         }
         if (null === $user) {
             throw new CustomUserMessageAuthenticationException('Authentication failed.');
@@ -204,10 +210,15 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
      */
     private function updateUserFromLdap(array $credentials)
     {
-        $filledFilter = str_replace('{username}', $credentials['username'], $this->ldapUsersFilter);
+        if ( strpos($credentials['username'],$this->internetDomain) > 0 ) {
+            $username = substr($credentials['username'], 0, strpos($credentials['username'],$this->internetDomain) ); 
+        } else {
+            $username = $credentials['username'];
+        }
+        $filledFilter = str_replace('{username}', $username, $this->ldapUsersFilter);
         $query = $this->ldap->query($this->ldapUserDn, $filledFilter);
         $results = $query->execute()->toArray();
-        $dbUser = $this->userManager->findUserByUsername($credentials['username']);
+        $dbUser = $this->userManager->findUserByUsername($username);
         if (null === $dbUser) {
             /* @var AMREU\UserBundle\Model\UserInterface $user */
             $user = $this->addUser($results[0], $credentials['password']);

@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')->end()
                 ->end()
                 ->scalarNode('form_type')->defaultValue('AMREU\UserBundle\Form\UserType')->info('User registration form type')->end()
+                ->scalarNode('internet_domain')->defaultValue('@amorebieta.eus')->info('@domain.com')->end()
                 ->scalarNode('domain')->info('Domain')->end()
                 ->scalarNode('ldap_users_dn')->info('LDAP\'s user dn')->end()
                 ->scalarNode('ldap_users_filter')->info('LDAP\'s user\'s filter')->end()

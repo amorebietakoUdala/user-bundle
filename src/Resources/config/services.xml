@@ -21,6 +21,7 @@
             <argument id="ldap_users_filter"/>
             <argument id="ldap_users_uuid"/>
             <argument id="successPath"/>
+            <argument id="internet_domain"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
             <argument type="service" id="security.user_password_hasher"/>
@@ -32,26 +33,13 @@
             <argument id="ldap_users_dn"/>
             <argument id="ldap_users_filter"/>
             <argument id="ldap_users_uuid"/>
+            <argument id="internet_domain"/>
             <argument type="service" id="router.default"/>
             <argument type="service" id="security.csrf.token_manager"/>
             <argument type="service" id="security.user_password_hasher"/>
             <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
             <argument type="service" id="amreu.user.manager"/>
         </service>
-        <service id="amreu.certificate.authenticator" class="AMREU\UserBundle\Security\CertificateAuthenticator">
-            <argument id="domain"/>
-            <argument id="ldap_users_dn"/>
-            <argument id="ldap_users_filter"/>
-            <argument id="ldap_users_uuid"/>
-            <argument id="ldap_user"/>
-            <argument id="ldap_password"/>
-            <argument type="service" id="router.default"/>
-            <argument type="service" id="security.csrf.token_manager"/>
-            <argument type="service" id="security.user_password_hasher"/>
-            <argument type="service" id="Symfony\Component\Ldap\Ldap"/>
-            <argument type="service" id="amreu.user.manager"/>
-        </service>
-
 
         <!-- CONTROLLERS -->
         <service id="amreu.user.basecontroller" class="AMREU\UserBundle\Controller\BaseController">
