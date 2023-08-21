@@ -69,6 +69,7 @@ class UserType extends AbstractType
                 'label' => 'user.activated',
                 'translation_domain' => 'user_bundle',
                 'disabled' => $readonly,
+                'required' => false,
             ])
             ->add('roles', ChoiceType::class, [
                 'label' => 'user.roles',
