@@ -8,7 +8,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
@@ -94,9 +93,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    }
 
    /**
-    * @return PassportInterface
+    * @return Passport
     */
-   public function authenticate(Request $request): PassportInterface
+   public function authenticate(Request $request): Passport
    {
       $credentials = $this->getCredentials($request);
       $username = $credentials['username'];
@@ -122,7 +121,6 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       if (!$user->getActivated()) {
          throw new CustomUserMessageAuthenticationException('user_deactivated');
       }
-      $user = $this->userManager->updateLastLogin($user);
       $passport = new Passport(
          new UserBadge($username, function ($userIdentifier) {
             return $this->userManager->findUserByUsername(['username' => $userIdentifier]);
@@ -130,8 +128,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          new CsrfTokenBadge('authenticate', $credentials['csrf_token']),
          new RememberMeBadge(),
       ]);
-
       $passport->addBadge(new PasswordUpgradeBadge($credentials['password'], $this->userRepository));
+      $user = $this->userManager->updateLastLogin($user);
+
       return $passport;
    }
 
@@ -170,6 +169,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     */
    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
    {
+      if (get_class($exception) === 'Symfony\\Component\\Security\\Core\\Exception\\BadCredentialsException') {
+         $exception = new CustomUserMessageAuthenticationException('user_not_found');
+      }
       if ($request->hasSession()) {
          $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
       }
