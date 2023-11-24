@@ -81,7 +81,7 @@ class UserController extends BaseController
         }
 
         return $this->render('@User/user/new.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'readonly' => false,
             'new' => true,
             'password_change' => true,
@@ -100,7 +100,7 @@ class UserController extends BaseController
         $form->setData($user);
 
         return $this->render('@User/user/edit.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'readonly' => true,
             'new' => false,
             'password_change' => false,
@@ -135,7 +135,7 @@ class UserController extends BaseController
         }
 
         return $this->render('@User/user/edit.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
             'readonly' => false,
             'new' => false,
             'password_change' => true,

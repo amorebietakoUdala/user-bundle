@@ -21,7 +21,7 @@ interface UserManagerInterface
     /**
      * Creates and stores a new User with the given params.
      *
-     * @return User
+     * @return UserInterface
      *
      * @param string $username
      * @param string $password
@@ -29,7 +29,7 @@ interface UserManagerInterface
      * @param string $email
      * @param array $roles
      */
-    public function newUser(string $username, string $password, string $firstName, string $email, array $roles, $activated = true, $lastLogin = null, $idNumber = null);
+    public function newUser(string $username, string $password, string $firstName, string $email, array $roles, $activated = true, $lastLogin = null, $idNumber = null): UserInterface;
 
     /**
      * Assigns the specified roles to a user.
@@ -88,14 +88,14 @@ interface UserManagerInterface
      *
      * @return array|null
      */
-    public function findAll();
+    public function findAll(): ?array;
 
     /**
      * Find user by id.
      *
-     * @return array|null
+     * @return UserInterface|null
      */
-    public function find(string $id);
+    public function find(string $id): UserInterface|null;
 
     /**
      * Updates a user.
@@ -112,7 +112,7 @@ interface UserManagerInterface
      *
      * @return UserInterface
      */
-    public function updatePassword($user, $password);
+    public function updatePassword($user, $password): UserInterface;
 
     /**
      * Updates last login date for the specified user.
@@ -121,12 +121,12 @@ interface UserManagerInterface
      *
      * @return UserInterface
      */
-    public function updateLastLogin($user);
+    public function updateLastLogin($user): UserInterface;
 
     /**
      * Returns the user's repository
      *
      * @return PasswordUpgraderInterface
      */
-    public function getRepository();
+    public function getRepository(): PasswordUpgraderInterface;
 }

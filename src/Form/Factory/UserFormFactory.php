@@ -2,6 +2,7 @@
 
 namespace AMREU\UserBundle\Form\Factory;
 
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormFactory;
 
 /**
@@ -24,7 +25,7 @@ class UserFormFactory implements FactoryInterface
         $this->formFactory = $formFactory;
     }
 
-    public function createForm(array $options = [])
+    public function createForm(array $options = []): FormInterface
     {
         $options['data_class'] = $this->class;
 
@@ -34,9 +35,9 @@ class UserFormFactory implements FactoryInterface
     /**
      * Returns the classname without namespace.
      *
-     * @return class
+     * @return string
      */
-    private function getClass()
+    private function getClass(): string
     {
         $end = explode('\\', strtolower($this->class));
 

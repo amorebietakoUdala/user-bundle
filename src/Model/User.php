@@ -2,8 +2,14 @@
 
 namespace AMREU\UserBundle\Model;
 
+
+use Doctrine\ORM\Mapping as ORM;
 use AMREU\UserBundle\Model\UserInterface as AMREUUserInterface;
 
+/**
+ * @ORM\MappedSuperclass
+ */
+#[ORM\MappedSuperclass]
 abstract class User implements AMREUUserInterface
 {
     /**
