@@ -32,7 +32,7 @@ class UserType extends AbstractType
         }
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $password_change = $options['password_change'];
         $readonly = $options['readonly'];
@@ -110,7 +110,7 @@ class UserType extends AbstractType
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => $this->class,
