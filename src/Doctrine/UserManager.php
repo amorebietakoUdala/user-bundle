@@ -11,19 +11,20 @@ namespace AMREU\UserBundle\Doctrine;
 use AMREU\UserBundle\Model\UserInterface;
 use AMREU\UserBundle\Model\UserManagerInterface;
 use DateTime;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 class UserManager implements UserManagerInterface
 {
-    protected $om;
+    protected EntityManagerInterface $em;
     private $class;
-    private $passwordEncoder;
+    private UserPasswordHasherInterface $passwordEncoder;
 
-    public function __construct(ObjectManager $om = null, $class = null, UserPasswordHasherInterface $passwordEncoder)
+    public function __construct(UserPasswordHasherInterface $passwordEncoder, $class = null, EntityManagerInterface $em = null)
     {
-        $this->om = $om;
+        $this->em = $em;
         $this->class = $class;
         $this->passwordEncoder = $passwordEncoder;
     }
@@ -42,8 +43,8 @@ class UserManager implements UserManagerInterface
         $user->setActivated($activated);
         $user->setLastLogin($lastLogin);
         $user->setIdNumber($idNumber);
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -57,10 +58,10 @@ class UserManager implements UserManagerInterface
      *
      * @throws Exception
      */
-    public function updateUser(UserInterface $user)
+    public function updateUser(UserInterface $user): UserInterface
     {
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -83,8 +84,8 @@ class UserManager implements UserManagerInterface
         }
         $actualRoles = $user->getRoles();
         $user->setRoles(array_unique(array_merge($actualRoles, $roles)));
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -107,8 +108,8 @@ class UserManager implements UserManagerInterface
         }
         $actualRoles = $user->getRoles();
         $user->setRoles(array_unique(array_diff($actualRoles, $roles)));
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -126,8 +127,8 @@ class UserManager implements UserManagerInterface
         if (null === $user) {
             throw new Exception('Username not found. Can\'t delete.');
         }
-        $this->om->remove($user);
-        $this->om->flush();
+        $this->em->remove($user);
+        $this->em->flush();
     }
 
     /**
@@ -146,8 +147,8 @@ class UserManager implements UserManagerInterface
             throw new Exception('Username not found. Can\'t delete.');
         }
         $user->setActivated($status);
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -190,7 +191,7 @@ class UserManager implements UserManagerInterface
      */
     public function findUserByUsername($username): ?UserInterface
     {
-        $user = $this->om->getRepository($this->class)->findOneBy(['username' => $username]);
+        $user = $this->em->getRepository($this->class)->findOneBy(['username' => $username]);
 
         return $user;
     }
@@ -205,7 +206,7 @@ class UserManager implements UserManagerInterface
      */
     public function findUserByEmail($email): ?UserInterface
     {
-        $user = $this->om->getRepository($this->class)->findOneBy(['email' => $email]);
+        $user = $this->em->getRepository($this->class)->findOneBy(['email' => $email]);
 
         return $user;
     }
@@ -215,9 +216,9 @@ class UserManager implements UserManagerInterface
      *
      * @return array|null
      */
-    public function findAll()
+    public function findAll(): ?array
     {
-        $user = $this->om->getRepository($this->class)->findAll();
+        $user = $this->em->getRepository($this->class)->findAll();
 
         return $user;
     }
@@ -229,7 +230,7 @@ class UserManager implements UserManagerInterface
      */
     public function find($id): ?UserInterface
     {
-        $user = $this->om->getRepository($this->class)->find($id);
+        $user = $this->em->getRepository($this->class)->find($id);
 
         return $user;
     }
@@ -245,8 +246,8 @@ class UserManager implements UserManagerInterface
     public function updatePassword($user, $password): UserInterface
     {
         $user->setPassword($this->passwordEncoder->hashPassword($user, $password));
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -262,8 +263,8 @@ class UserManager implements UserManagerInterface
     public function updateLastLogin($user): UserInterface
     {
         $user->setLastLogin(new DateTime());
-        $this->om->persist($user);
-        $this->om->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         return $user;
     }
@@ -273,8 +274,8 @@ class UserManager implements UserManagerInterface
      *
      * @return PasswordUpgraderInterface
      */
-    public function getRepository()
+    public function getRepository(): PasswordUpgraderInterface
     {
-        return $this->om->getRepository($this->class);
+        return $this->em->getRepository($this->class);
     }
 }

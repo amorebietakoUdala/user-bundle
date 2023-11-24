@@ -19,5 +19,5 @@ interface FactoryInterface
     /**
      * @return FormInterface
      */
-    public function createForm();
+    public function createForm(): FormInterface;
 }

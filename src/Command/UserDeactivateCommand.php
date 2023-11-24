@@ -3,6 +3,7 @@
 namespace AMREU\UserBundle\Command;
 
 use AMREU\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,11 +15,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * This command desactivates the specified user by his username
  */
+#[AsCommand(name: 'amreu:user:deactivate')]
 class UserDeactivateCommand extends Command
 {
     private $manager;
-
-    protected static $defaultName = 'amreu:user:deactivate';
 
     public function __construct(UserManagerInterface $manager)
     {
@@ -26,7 +26,7 @@ class UserDeactivateCommand extends Command
         $this->manager = $manager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Deactivates the user')

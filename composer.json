@@ -9,11 +9,12 @@
         }
     ],
     "require": {
-        "php": "^7.2.5",
-        "symfony/framework-bundle": "^5.4",
-        "symfony/security-bundle": "^5.4",
-        "symfony/ldap": "^5.4",
-        "symfony/form": "^5.4",
+        "php": "^8.1",
+        "doctrine/orm": "^2.16",
+        "symfony/framework-bundle": "^5.4|6.*",
+        "symfony/security-bundle": "^5.4|6.*",
+        "symfony/ldap": "^5.4|6.*",
+        "symfony/form": "^5.4|6.*",
         "twig/twig": "^3.4",
         "doctrine/doctrine-bundle": "^2.1"
     },
@@ -28,8 +29,8 @@
         }
     },
     "require-dev": {
-        "symfony/browser-kit": "^5.4",
-        "symfony/css-selector": "^5.4",
-        "symfony/phpunit-bridge": "^5.4"
+        "symfony/browser-kit": "^5.4|6.*",
+        "symfony/css-selector": "^5.4|6.*",
+        "symfony/phpunit-bridge": "^5.4|6.*"
     }
 }

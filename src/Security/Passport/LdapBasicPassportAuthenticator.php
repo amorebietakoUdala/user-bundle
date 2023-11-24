@@ -19,7 +19,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use AMREU\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
-use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
 class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
@@ -35,7 +34,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     private $userManager;
     private $internetDomain;
 
-    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $internetDomain, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+    public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $internetDomain, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, UserManagerInterface $userManager, LdapInterface $ldap = null)
     {
         $this->domain = $domain;
         $this->ldapUserDn = $ldapUserDn;
@@ -104,7 +103,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         return $user;
     }
 
-    public function authenticate(Request $request): PassportInterface
+    public function authenticate(Request $request): Passport
     {
         $credentials = $this->getCredentials($request);
         $user = $this->getUser($credentials);
@@ -137,7 +136,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     /**
      * @return Response
      */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         return new JsonResponse([
             'message' => $exception->getMessage(),
@@ -147,7 +146,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     /**
      * @return Response
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): Response
     {
         // Allow the request to continue
         return null;
@@ -208,7 +207,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
      *
      * @return AMREU\UserBundle\Model\UserInterface
      */
-    private function updateUserFromLdap(array $credentials)
+    private function updateUserFromLdap(array $credentials): UserInterface
     {
         if ( strpos($credentials['username'],$this->internetDomain) > 0 ) {
             $username = substr($credentials['username'], 0, strpos($credentials['username'],$this->internetDomain) ); 
@@ -238,7 +237,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
      * @return AMREU\UserBundle\Model\UserInterface
      */
 
-    private function updatePassword($user, $password)
+    private function updatePassword($user, $password): UserInterface
     {
         return $this->userManager->updatePassword($user, $password);
     }

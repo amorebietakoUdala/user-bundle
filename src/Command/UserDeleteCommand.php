@@ -3,6 +3,7 @@
 namespace AMREU\UserBundle\Command;
 
 use AMREU\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,11 +16,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * This command assigns the given roles to the specified username
  * The roles must separated with spaces
  */
+
+#[AsCommand(name: 'amreu:user:deactivate')]
 class UserDeleteCommand extends Command
 {
     private $manager;
-
-    protected static $defaultName = 'amreu:user:delete';
 
     public function __construct(UserManagerInterface $manager)
     {
@@ -27,7 +28,7 @@ class UserDeleteCommand extends Command
         $this->manager = $manager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Deletes the user')

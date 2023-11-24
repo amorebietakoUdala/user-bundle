@@ -2,6 +2,7 @@
 
 namespace AMREU\UserBundle\Security\Passport;
 
+use AMREU\UserBundle\Model\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -42,7 +43,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    private $userRepository;
    private $internetDomain;
 
-   public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, string $internetDomain, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, LdapInterface $ldap = null, UserManagerInterface $userManager)
+   public function __construct(string $domain, string $ldapUserDn, string $ldapUsersFilter, string $ldapUsersUuid, string $successPath, string $internetDomain, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, UserManagerInterface $userManager, LdapInterface $ldap = null)
    {
       $this->domain = $domain;
       $this->ldapUserDn = $ldapUserDn;
@@ -153,7 +154,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
    /**
     * @return Response
     */
-   public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+   public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): Response
    {
       $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
       if (null === $targetPath) {
@@ -167,7 +168,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     *
     * @return RedirectResponse
     */
-   public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+   public function onAuthenticationFailure(Request $request, AuthenticationException $exception): RedirectResponse
    {
       if (get_class($exception) === 'Symfony\\Component\\Security\\Core\\Exception\\BadCredentialsException') {
          $exception = new CustomUserMessageAuthenticationException('user_not_found');
@@ -193,7 +194,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
      * @return AMREU\UserBundle\Model\UserInterface
      */
 
-   private function updatePassword($user, $password)
+   private function updatePassword($user, $password): UserInterface
    {
       return $this->userManager->updatePassword($user, $password);
    }
@@ -208,7 +209,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
      * @return AMREU\UserBundle\Model\UserInterface
      */
 
-   private function updateUserFromLdap(array $credentials)
+   private function updateUserFromLdap(array $credentials): UserInterface
    {
       if ( strpos($credentials['username'],$this->internetDomain) > 0 ) {
          $username = substr($credentials['username'], 0, strpos($credentials['username'],$this->internetDomain) ); 

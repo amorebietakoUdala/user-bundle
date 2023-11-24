@@ -3,6 +3,7 @@
 namespace AMREU\UserBundle\Command;
 
 use AMREU\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,11 +17,11 @@ use Symfony\Component\Console\Question\Question;
  * This command assigns the given roles to the specified username
  * The roles must separated with spaces
  */
+
+#[AsCommand(name: 'amreu:user:promote')]
 class UserPromoteCommand extends Command
 {
     private $manager;
-
-    protected static $defaultName = 'amreu:user:promote';
 
     public function __construct(UserManagerInterface $manager)
     {
@@ -28,7 +29,7 @@ class UserPromoteCommand extends Command
         $this->manager = $manager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Add roles to the user')
