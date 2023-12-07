@@ -149,7 +149,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): Response
     {
         // Allow the request to continue
-        return null;
+        return new Response();
     }
 
     /**
