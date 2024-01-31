@@ -18,11 +18,15 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use AMREU\UserBundle\Model\UserManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
+    use TargetPathTrait;
+
     private $domain;
     private $ldapUserDn;
     private $ldapUsersFilter;
@@ -146,10 +150,14 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     /**
      * @return Response
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
-        // Allow the request to continue
-        return new Response();
+        $targetPath = $this->getTargetPath($request->getSession(), $providerKey);
+        if ($targetPath) {
+            return new RedirectResponse($targetPath);
+        }
+
+        return null;
     }
 
     /**
