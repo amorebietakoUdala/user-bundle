@@ -13,7 +13,7 @@ class SecurityController extends AbstractController
 {
     public function login(Request $request, AuthenticationUtils $authenticationUtils)
     {
-        return $this->renderForm('@User/security/login.html.twig', [
+        return $this->render('@User/security/login.html.twig', [
             'last_username' => $request->getSession()->get(Security::LAST_USERNAME),
             'error' => $authenticationUtils->getLastAuthenticationError()
         ]);

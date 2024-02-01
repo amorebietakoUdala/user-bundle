@@ -34,3 +34,6 @@ btn.user.cancel: "Back"
 ROLE_USER: User
 ROLE_ADMIN: Administrator
 ROLE_SUPER_ADMIN: Super Administrator
+
+# Others
+security.login.remember_me: "Remember me"
