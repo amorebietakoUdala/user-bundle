@@ -33,3 +33,6 @@ btn.user.cancel: "Itzuli"
 ROLE_USER: Erabiltzailea
 ROLE_ADMIN: Administraria
 ROLE_SUPER_ADMIN: Super Administraria
+
+# Others
+security.login.remember_me: "Oroitu"

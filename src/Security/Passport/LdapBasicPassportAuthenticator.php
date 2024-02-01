@@ -57,7 +57,13 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
      */
     public function supports(Request $request): bool
     {
-        return null !== $request->headers->has('authorization') && 0 === strpos($request->headers->get('authorization'), 'Basic ');
+        if ($request->headers->has('authorization')) {
+            $authorization = $request->headers->get('authorization');
+            if (is_string($authorization)) {
+                return strpos($authorization, 'Basic ') === 0;
+            }
+        }
+        return false;
     }
 
     /**
