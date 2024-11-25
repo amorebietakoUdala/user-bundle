@@ -83,7 +83,6 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         } catch (ConnectionException $e) {
             $bindSuccessfull = false;
         }
-
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             throw new InvalidCsrfTokenException();
@@ -179,7 +178,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
         $results = $query->execute()->toArray();
         $dbUser = $this->userManager->findUserByUsername($credentials['username']);
         if (null === $dbUser) {
-            /* @var AMREU\UserBundle\Model\UserInterface $user */
+            /** @var AMREU\UserBundle\Model\UserInterface $user */
             $user = $this->addUser($results[0], $credentials['password']);
         } else {
             $user = $this->updatePassword($dbUser, $credentials['password']);
