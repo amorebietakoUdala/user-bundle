@@ -16,6 +16,7 @@ user_not_found: El usuario y contraseña no son correctos
 user_exists: El usuario ya existe
 user_saved: El usuario se ha guardado correctamente
 user_deleted: El usuario se ha borrado correctamente
+connection_error: No se ha podido conectar con el LDAP. Revise la configuración.
 
 # Labels
 table.options: "Opciones"

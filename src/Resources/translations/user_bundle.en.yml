@@ -17,6 +17,7 @@ user_not_found: The user and password are not correct
 user_exists: The user exists
 user_saved: User saved
 user_deleted: User deleted
+connection_error: Can't connect to LDAP server. Check out the configuration.
 
 # Labels
 table.options: "Options"

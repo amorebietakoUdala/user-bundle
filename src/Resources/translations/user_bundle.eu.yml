@@ -16,6 +16,7 @@ user_not_found: Erabiltzailea eta pasahitza ez dira zuzenak
 user_exists: Erabiltzailea existitzen da dagoeneko
 user_saved: Erabiltzailea gorde egin da.
 user_deleted: Erabiltzailea behar bezala ezabatu da.
+connection_error: Ezin izan da LDAP zerbitzariarekin konektatu. Konfigurazioa berrikusi.
 
 # Labels
 table.options: "Aukerak"

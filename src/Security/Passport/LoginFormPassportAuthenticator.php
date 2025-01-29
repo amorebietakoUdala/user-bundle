@@ -109,6 +109,9 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          $this->ldap->bind($this->domain . '\\' .$username, $credentials['password']);
          $bindSuccessfull = true;
       } catch (ConnectionException $e) {
+         if ($e->getMessage() === "Can't contact LDAP server") {
+            throw new CustomUserMessageAuthenticationException("connection_error");
+         }
          $bindSuccessfull = false;
       }
       if ($bindSuccessfull) {
