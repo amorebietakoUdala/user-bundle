@@ -14,7 +14,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Component\Ldap\Exception\ConnectionException;
 use Symfony\Component\Ldap\LdapInterface;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -25,6 +24,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\PasswordUpgradeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 class LoginFormPassportAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
@@ -86,10 +86,8 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          'password' => $request->request->get('password'),
          'csrf_token' => $request->request->get('_csrf_token'),
       ];
-      $request->getSession()->set(
-         Security::LAST_USERNAME,
-         $credentials['username']
-      );
+      $session = $request->getSession();
+      $session->set('_security.last_username', $credentials['username']);
       return $credentials;
    }
 
@@ -109,7 +107,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
          $this->ldap->bind($this->domain . '\\' .$username, $credentials['password']);
          $bindSuccessfull = true;
       } catch (ConnectionException $e) {
-         if ($e->getMessage() === "Can't contact LDAP server") {
+         if (trim($e->getMessage()) === "Can't contact LDAP server") {
             throw new CustomUserMessageAuthenticationException("connection_error");
          }
          $bindSuccessfull = false;
@@ -173,11 +171,13 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
     */
    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): RedirectResponse
    {
-      if (get_class($exception) === 'Symfony\\Component\\Security\\Core\\Exception\\BadCredentialsException') {
+      if (get_class($exception) === BadCredentialsException::class) {
          $exception = new CustomUserMessageAuthenticationException('user_not_found');
       }
-      if ($request->hasSession()) {
-         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+
+      if($request->hasSession()) {
+         $session = $request->getSession();
+         $session->set('_security.auth_error', $exception);
       }
 
       return new RedirectResponse($this->getLoginUrl($request));
@@ -224,7 +224,7 @@ class LoginFormPassportAuthenticator extends AbstractAuthenticator implements Au
       $results = $query->execute()->toArray();
       $dbUser = $this->userManager->findUserByUsername($username);
       if (null === $dbUser) {
-         /* @var AMREU\UserBundle\Model\UserInterface $user */
+         /** @var UserInterface $user */
          $user = $this->addUser($results[0], $credentials['password']);
       } else {
          $user = $this->updatePassword($dbUser, $credentials['password']);

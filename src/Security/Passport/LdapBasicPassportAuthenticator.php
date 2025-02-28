@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\Security\Core\User\UserInterface;
+use AMREU\UserBundle\Model\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -219,7 +219,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
      * Then check DB for the same username.
      * If not found in DB add the user
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface
      */
     private function updateUserFromLdap(array $credentials): UserInterface
     {
@@ -233,7 +233,7 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
         $results = $query->execute()->toArray();
         $dbUser = $this->userManager->findUserByUsername($username);
         if (null === $dbUser) {
-            /* @var AMREU\UserBundle\Model\UserInterface $user */
+            /** @var UserInterface $user */
             $user = $this->addUser($results[0], $credentials['password']);
         } else {
             $user = $this->updatePassword($dbUser, $credentials['password']);
@@ -245,10 +245,10 @@ class LdapBasicPassportAuthenticator extends AbstractAuthenticator implements Au
     /** 
      * Updates the password of the specified user in the database.
      *
-     * @param AMREU\UserBundle\Model\UserInterface $user
+     * @param UserInterface $user
      * @param string $password
      *
-     * @return AMREU\UserBundle\Model\UserInterface
+     * @return UserInterface
      */
 
     private function updatePassword($user, $password): UserInterface
