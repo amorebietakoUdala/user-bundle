@@ -2,7 +2,7 @@
 
 <form action="{{ path("user_security_login_check") }}" method="post">
     {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey | trans(error.messageData, 'user') }}</div>
+        <div class="alert alert-danger">{{ error.messageKey | trans(error.messageData, 'user_bundle') }}</div>
     {% endif %}
 
     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
